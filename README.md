@@ -12,11 +12,15 @@ How to run:
 
 Start the frontend by running: 
 
-```cd /frontend/```
- ```npm run dev```
+```
+cd /frontend/
+npm run dev
+```
 
  Start the backend on a seperate terminal by running: 
-
- ```cd /backend/```
- ```npm start```
+ 
+```
+cd /backend/
+npm start  
+```
 
