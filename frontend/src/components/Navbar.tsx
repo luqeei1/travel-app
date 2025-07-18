@@ -1,62 +1,47 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
-const Navbar: React.FC = () => {
-  const isLoading = false;
+const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
 
-  const isActive = (path : string) => location.pathname === path; 
+  const isActive = (path: string) => location.pathname === path;
+
+  const navItems = [
+    { path: '/', label: 'Search Destinations', color: 'blue' },
+    { path: '/Map', label: 'View Map', color: 'blue' },
+    { path: '/Plan', label: 'Wish List', color: 'blue' },
+  ];
 
   return (
-    <>
-    <div className={`flex flex-wrap gap-2 ml-1 ${isActive("/Map") ? "bg-blue-200 " : " "}`}>
-      <div className="p-2">
-        <button
-          type="button"
-          disabled={isLoading}
-          onClick={() => navigate(`/`)}
-          className={`px-4 py-2 rounded-lg transition-all ${
-            isLoading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-teal-600 hover:bg-teal-700 text-white transform hover:scale-105'
-          }`}
-        >
-          Search Destinations
-        </button>
+    <nav className="bg-white shadow-sm border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-xl font-bold text-gray-800 hidden sm:block">
+              TravelPlanner
+            </h1>
+            <div className="flex space-x-1 sm:space-x-2">
+              {navItems.map((item) => (
+                <motion.button
+                  key={item.path}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate(item.path)}
+                  className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    isActive(item.path)
+                      ? `bg-${item.color}-100 text-${item.color}-700`
+                      : `text-gray-600 hover:text-${item.color}-600 hover:bg-${item.color}-50`
+                  }`}
+                >
+                  {item.label}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div className="p-2">
-        <button
-          type="button"
-          disabled={isLoading}
-          onClick={() => navigate(`/Map`)}
-          className={`px-4 py-2 rounded-lg transition-all ${
-            isLoading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-105'
-          }`}
-        >
-          View Map
-        </button>
-      </div>
-
-      <div className="p-2">
-        <button
-          type="button"
-          disabled={isLoading}
-          className={`px-4 py-2 rounded-lg transition-all ${
-            isLoading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-purple-600 hover:bg-purple-700 text-white transform hover:scale-105'
-          }`}
-        >
-          Plan Trip
-        </button>
-      </div>
-    </div>
-    </>
+    </nav>
   );
 };
 

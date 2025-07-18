@@ -16,7 +16,7 @@ const images = [
 ];
 
 export default function DestinationDetails() {
-  const isLoading = false; // Placeholder for loading state, can be replaced with actual logic
+  const isLoading = false;
   const { id } = useParams<{ id: string }>();
   console.log('DestinationDetails id:', id);
   const navigate = useNavigate();

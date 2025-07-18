@@ -2,18 +2,25 @@ from sqlalchemy.orm import Session
 import models
 import numpy as np
 from sentence_transformers import SentenceTransformer
+from fastapi import HTTPException
+import os 
+from pymongo import MongoClient
+from dotenv import load_dotenv
 
-# Initialize model globally (384-dim)
+
+load_dotenv()
+
 model = SentenceTransformer('all-MiniLM-L6-v2')
+mongodb = os.getenv("MONGODB_URL")
+collection_name = os.getenv("MONGODB_COLLECTION")
+database_name = os.getenv("MONGODB_DATABASE")
+
+
+client = MongoClient(mongodb)
+mongo_db = client[database_name]
 
 def get_ai_destinations(db: Session, query_embedding, top_k: int = 5):
-    """
-    Get top_k destinations most similar to the query
-    Args:
-        db: Database session
-        query: Search query string
-        top_k: Number of results to return
-    """
+   
     
     destinations = db.query(models.Destination).all()
     results = []
@@ -47,19 +54,44 @@ def get_ai_destinations(db: Session, query_embedding, top_k: int = 5):
 
 
     
-    # Return top_k most similar results
+    
     return sorted(results, key=lambda x: x["ai_similarity"], reverse=True)[:top_k]
 
 def get_info_by_id(db: Session, destination_id: int):
-    """
-    Get destination info by ID
-    Args:
-        db: Database session
-        destination_id: ID of the destination
-    """
+
     if not db.query(models.Destination).filter(models.Destination.id == destination_id).first():
         print("This destination does not exist")
     else:
         print("This destination exists")
         
     return db.query(models.Destination).filter(models.Destination.id == destination_id).first()
+
+def get_all_destinations(db: Session):
+
+
+    destinations = db.query(models.Destination).all()
+    result = []
+    if not destinations:
+        print("no destinations found")
+    else:
+        print("destinations found") 
+    
+    return destinations
+
+def add_destination_to_mongodb2(destination: str):
+    try:
+        mongo_db[collection_name].insert_one({"name": destination})
+        print("sent to mongodb")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+def get_all_destinations_from_db():
+    try:
+        destinations = mongo_db[collection_name].find()
+        result = []
+        for destination in destinations:
+            destination['name'] = str(destination['name'])
+            result.append(destination['name'])
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

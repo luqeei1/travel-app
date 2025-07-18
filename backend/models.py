@@ -10,8 +10,7 @@ class Destination(Base):
     country = Column(String)
     region = Column(String)
     average_price = Column(Integer)
-    similarity_rating = Column(Float)  # Changed to Float for decimal ratings
+    similarity_rating = Column(Float)
     average_temperature = Column(Integer)
     average_weather = Column(String)
-    embedding = Column(LargeBinary)  # For storing vector embeddings
-    # search_vector can be added if using PostgreSQL's full-text search
+    embedding = Column(LargeBinary)

@@ -56,7 +56,6 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, altText = 'carous
       alt={`${altText} ${currentIndex + 1}`}
       className="w-full h-80 object-cover rounded-xl absolute"
       custom={direction}
-      variants={variants}
       initial="enter"
       animate="center"
       exit="exit"
