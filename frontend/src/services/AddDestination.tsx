@@ -27,3 +27,15 @@ export const addDestinationToMongoDB = async (destination: string): Promise<{ me
     const data = await response.json();
     return data;
 }
+
+export const addDestinationToWishlist = async (destination: string): Promise<{ message: string }> => {
+    const response = await fetch(`http://localhost:8000/travel/wishlist/${destination}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) throw new Error('Failed to add destination to wishlist');
+
+    const data = await response.json();
+    return data;
+}

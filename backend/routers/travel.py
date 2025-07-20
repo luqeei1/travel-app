@@ -10,7 +10,9 @@ from crud import get_info_by_id
 from crud import get_all_destinations
 from crud import add_destination_to_mongodb2
 from crud import get_all_destinations_from_db
-
+from crud import add_destination_to_wishlist as crud_add_to_wishlist
+from crud import get_wishlist as crud_get_wishlist
+from crud import delete_from_wishlist
 
 
 router = APIRouter(prefix="/travel", tags=["travel"])
@@ -55,6 +57,38 @@ async def get_previous_destinations_from_mongo():
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+@router.get("/wishlist")
+async def get_wishlist_route():
+    try:
+        destinations = crud_get_wishlist()
+        if not destinations:
+            raise HTTPException(status_code=404, detail="No destination found")
+        return destinations
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/wishlist/{destination}")
+def add_destination_to_wishlist_route(destination: str):
+    try:
+        if not destination:
+            raise HTTPException(status_code=400, detail="Destination name is required")
+        crud_add_to_wishlist(destination)
+        return {"message": "Destination added to wishlist successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.delete("/wishlist/{destination}")
+def delete_destination_from_wishlist(destination: str):
+    try:
+        if not destination:
+            raise HTTPException(status_code=400, detail="Destination name is required")
+        delete_from_wishlist(destination)
+        return {"message": "Destination removed from wishlist successfully"}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
 @router.get("/{destination_id}")
 async def info(destination_id: int, db: Session = Depends(get_db)):
     try:
@@ -81,6 +115,7 @@ def add_destination_to_mongodb(destination: dict, db: Session = Depends(get_db))
         return {"message": "Destination added successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 
 

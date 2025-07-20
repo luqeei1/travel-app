@@ -14,6 +14,8 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 mongodb = os.getenv("MONGODB_URL")
 collection_name = os.getenv("MONGODB_COLLECTION")
 database_name = os.getenv("MONGODB_DATABASE")
+wishlist_collection = os.getenv("MONGODB_WISHLIST_COLLECTION")
+
 
 
 client = MongoClient(mongodb)
@@ -93,5 +95,37 @@ def get_all_destinations_from_db():
             destination['name'] = str(destination['name'])
             result.append(destination['name'])
         return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+def add_destination_to_wishlist(destination: str):
+    try:
+        mongo_db[wishlist_collection].insert_one({
+            "name": destination,
+        })
+        print(f"Destination '{destination}' added to wishlist")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+def get_wishlist():
+    try:
+        print(f"Fetching from collection: {wishlist_collection}")
+        wishlist = mongo_db[wishlist_collection].find()
+        result = []
+        for item in wishlist:
+            item['name'] = str(item['name'])
+            result.append(item['name'])
+        print(f"Found {len(result)} wishlist items: {result}")
+        return result
+    except Exception as e:
+        print(f"Error in get_wishlist: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+def delete_from_wishlist(destination: str):
+    try:
+        result = mongo_db[wishlist_collection].delete_one({"name": destination})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Destination not found in wishlist")
+        print(f"Destination '{destination}' removed from wishlist")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

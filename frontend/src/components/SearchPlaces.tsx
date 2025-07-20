@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { searchDestinations } from '../services/travelService';
 import type { Destination } from '../types/destination';
 import { useNavigate } from 'react-router-dom';
+import {addDestinationToWishlist} from '../services/AddDestination';
 import Navbar from './Navbar';
 
 export default function SearchPlaces() {
@@ -9,6 +10,7 @@ export default function SearchPlaces() {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [wishlistMessages, setWishlistMessages] = useState<{[key: number]: string}>({});
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,6 +36,44 @@ export default function SearchPlaces() {
       console.error('Search error:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAddToWishlist = async (destinationId: number, destinationName: string) => {
+    try {
+      setWishlistMessages(prev => ({ ...prev, [destinationId]: 'Adding...' }));
+      
+      await addDestinationToWishlist(destinationName);
+      
+      setWishlistMessages(prev => ({ 
+        ...prev, 
+        [destinationId]: 'Added to wishlist!' 
+      }));
+      
+      // Clear the message after 3 seconds
+      setTimeout(() => {
+        setWishlistMessages(prev => {
+          const newMessages = { ...prev };
+          delete newMessages[destinationId];
+          return newMessages;
+        });
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error adding to wishlist:', error);
+      setWishlistMessages(prev => ({ 
+        ...prev, 
+        [destinationId]: 'Failed to add to wishlist' 
+      }));
+      
+      // Clear error message after 3 seconds
+      setTimeout(() => {
+        setWishlistMessages(prev => {
+          const newMessages = { ...prev };
+          delete newMessages[destinationId];
+          return newMessages;
+        });
+      }, 3000);
     }
   };
 
@@ -149,6 +189,25 @@ export default function SearchPlaces() {
                       >
                         View Destination Details
                       </button>
+
+                      <button
+                        onClick={() => handleAddToWishlist(destination.id, destination.name)}
+                        disabled={!!wishlistMessages[destination.id]}
+                        className={`mt-3 w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium transition-colors duration-200 ${
+                          wishlistMessages[destination.id]
+                            ? wishlistMessages[destination.id].includes('Added')
+                              ? 'bg-green-50 text-green-700 border-green-300'
+                              : wishlistMessages[destination.id].includes('Failed')
+                              ? 'bg-red-50 text-red-700 border-red-300'
+                              : 'bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed'
+                            : 'text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                        }`}
+                      >
+                        <span className="text-sm font-medium">
+                          {wishlistMessages[destination.id] || 'Save to Wishlist'}
+                        </span>
+                      </button>
+
                     </div>
                   </div>
                 ))}

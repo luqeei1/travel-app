@@ -403,7 +403,7 @@ DESTINATIONS = [
     }
 ]
 
-    # Add all your destinations here...
+   
 
 def seed_database():
     db = SessionLocal()
