@@ -174,9 +174,6 @@ export default function SearchPlaces() {
                             {destination.country}
                           </p>
                         </div>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {Math.round(destination.ai_similarity * 100)}% Match
-                        </span>
                       </div>
                       
                       <p className="text-gray-600 mb-4 line-clamp-3 italic">

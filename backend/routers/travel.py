@@ -1,43 +1,59 @@
-# travel.py (pure router)
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from crud import get_ai_destinations
+from crud import (
+    get_ai_destinations,
+    get_info_by_id,
+    get_all_destinations,
+    add_destination_to_mongodb2,
+    get_all_destinations_from_db,
+    add_destination_to_wishlist as crud_add_to_wishlist,
+    get_wishlist as crud_get_wishlist,
+    delete_from_wishlist
+)
 from sentence_transformers import SentenceTransformer
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from crud import get_info_by_id
-from crud import get_all_destinations
-from crud import add_destination_to_mongodb2
-from crud import get_all_destinations_from_db
-from crud import add_destination_to_wishlist as crud_add_to_wishlist
-from crud import get_wishlist as crud_get_wishlist
-from crud import delete_from_wishlist
-
 
 router = APIRouter(prefix="/travel", tags=["travel"])
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 class SearchQuery(BaseModel):
     query: str
-    top_k: int = 5 
+    top_k: int = 3
+
+def infer_temperature_range_from_query(query: str):
+    query = query.lower()
+    min_temp, max_temp = None, None
+    if any(word in query for word in ['hot', 'warm', 'tropical']):
+        min_temp = 20
+    if any(word in query for word in ['cold', 'chilly', 'freezing', 'snow', 'arctic']):
+        max_temp = 10
+    if 'mild' in query or 'temperate' in query:
+        min_temp, max_temp = 10, 20
+    if 'cool' in query:
+        max_temp = 15
+    return min_temp, max_temp
 
 @router.post("/ai-search")
-async def search_route(
-    search: SearchQuery, 
-    db: Session = Depends(get_db)
-):
+async def search_route(search: SearchQuery, db: Session = Depends(get_db)):
     try:
         query_embedding = model.encode(search.query)
-        print(get_ai_destinations(db, query_embedding, search.top_k))
+        min_temp, max_temp = infer_temperature_range_from_query(search.query)
         
-        return get_ai_destinations(db, query_embedding, search.top_k)
+        results = get_ai_destinations(
+            db,
+            query_embedding,
+            top_k=search.top_k,
+            min_temperature=min_temp,
+            max_temperature=max_temp
+        )
+        return results
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/visited")
-async def get_destinations(db : Session = Depends(get_db)):
+async def get_destinations(db: Session = Depends(get_db)):
     try:
         destinations = get_all_destinations(db)
         if not destinations:
@@ -56,7 +72,7 @@ async def get_previous_destinations_from_mongo():
         return destinations
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
 @router.get("/wishlist")
 async def get_wishlist_route():
     try:
@@ -88,13 +104,13 @@ def delete_destination_from_wishlist(destination: str):
         raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
 @router.get("/{destination_id}")
 async def info(destination_id: int, db: Session = Depends(get_db)):
     try:
         destination = get_info_by_id(db, destination_id)
         if not destination:
-            print("this destintation does not exist")
+            print("this destination does not exist")
             raise HTTPException(status_code=404, detail="Destination not found")
         return {
             "average_price": destination.average_price,
@@ -115,7 +131,3 @@ def add_destination_to_mongodb(destination: dict, db: Session = Depends(get_db))
         return {"message": "Destination added successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-
-
