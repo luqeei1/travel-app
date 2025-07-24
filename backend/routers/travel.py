@@ -10,7 +10,8 @@ from crud import (
     add_destination_to_wishlist as crud_add_to_wishlist,
     get_wishlist as crud_get_wishlist,
     delete_from_wishlist,
-    local_journal_fetch
+    local_journal_fetch,
+    UpdateJournal
 )
 from sentence_transformers import SentenceTransformer
 from pydantic import BaseModel
@@ -21,6 +22,10 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 class SearchQuery(BaseModel):
     query: str
     top_k: int = 3
+
+class JournalUpdate(BaseModel):
+    name: str
+    journal: str
 
 def infer_temperature_range_from_query(query: str):
     query = query.lower()
@@ -71,6 +76,17 @@ async def get_previous_destinations_from_mongo():
         if not destinations:
             raise HTTPException(status_code=404, detail="No previous destinations found")
         return destinations
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.put("/update_journal")
+async def update_journal(updated_journal: JournalUpdate):
+    try:
+        if not updated_journal.name or not updated_journal.journal:
+            raise HTTPException(status_code=400, detail="Name and journal content are required")
+        print(f"Updating journal for {updated_journal.name}")
+        UpdateJournal(updated_journal.name, updated_journal.journal)
+        return {"message": "Journal updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

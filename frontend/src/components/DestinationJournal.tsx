@@ -24,6 +24,21 @@ const DestinationJournal = () => {
         fetchJournalEntries();
     }, [name]);
 
+    const handleUpdateJournal = async () => {
+        const journal = journalEntries[0][1];
+        if (!name || !journal) {
+            console.error('Name or journal content is missing');
+            return;
+        }
+        try {
+            if (!name) throw new Error('No destination name provided');
+            await UpdateJournal(name, journal);
+            setEdit(false);
+        } catch (error) {
+            console.error('Error updating journal:', error);
+        }
+    };
+
 
 
     return (
@@ -109,7 +124,7 @@ const DestinationJournal = () => {
                         </div>
                     )}
                     <div className='flex justify-center mt-6'>
-                        <button onClick={() => {setEdit(!edit)}} className="bg-amber-500 text-white px-4 py-2 rounded-md">
+                        <button onClick={() => {setEdit(!edit); if (edit) handleUpdateJournal();}} className="bg-amber-500 text-white px-4 py-2 rounded-md">
                             {edit ? 'Save' : 'Edit'}
                         </button>
                     </div>

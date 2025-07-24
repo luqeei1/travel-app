@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import Navbar from './Navbar';
-import { getWishlist } from '../services/travelService';
 import type { Destination } from '../types/destination';
-import { deleteFromWishlist } from '../services/travelService';
+import { deleteFromWishlist, getWishlist } from '../services/travelService';
 
 const WishList = () => {
   const [data, setData] = React.useState<string[]>([]);

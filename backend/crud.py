@@ -100,6 +100,21 @@ def get_all_destinations_from_db():
 def local_journal_fetch(name : str):
     return [entry for entry in local_journal if entry[0] == name]
 
+def UpdateJournal(name: str, journal: str):
+    try:
+        for i, entry in enumerate(local_journal):
+            if entry[0] == name:
+                local_journal[i][1] = journal
+                break
+        else:
+            raise HTTPException(status_code=404, detail="Destination not found in local journal")
+        
+        
+        mongo_db[collection_name].update_one({"name": name}, {"$set": {"journal": journal}})
+        print(f"Updated journal for {name} in MongoDB")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 
 
 def add_destination_to_wishlist(destination: str):

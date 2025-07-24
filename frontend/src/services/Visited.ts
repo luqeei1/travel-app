@@ -35,8 +35,8 @@ export const Journal = async (name: string): Promise<[string, string][]> => {
 }
 
 export const UpdateJournal = async (name: string, journal: string): Promise<void> => {
-    const response = await fetch(`http://localhost:8000/travel/update_journal/${name}/${journal}`, {
-        method: "POST",
+    const response = await fetch(`http://localhost:8000/travel/update_journal`, {
+        method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },
