@@ -149,3 +149,13 @@ def delete_from_wishlist(destination: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+def get_destination_by_name(db: Session, destination_name: str):
+    """Search for destination by name (case-insensitive partial match)"""
+    try:
+        destination = db.query(models.Destination).filter(
+            models.Destination.name.ilike(f"%{destination_name}%")
+        ).first()
+        return destination
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+

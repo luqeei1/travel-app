@@ -11,7 +11,8 @@ from crud import (
     get_wishlist as crud_get_wishlist,
     delete_from_wishlist,
     local_journal_fetch,
-    UpdateJournal
+    UpdateJournal,
+    get_destination_by_name
 )
 from sentence_transformers import SentenceTransformer
 from pydantic import BaseModel
@@ -129,6 +130,24 @@ async def local_journal_route(name: str):
         if not entries:
             raise HTTPException(status_code=404, detail="No journal entries found for this destination")
         return entries
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/search-by-name/{destination_name}")
+async def search_destination_by_name(destination_name: str, db: Session = Depends(get_db)):
+    try:
+        destination = get_destination_by_name(db, destination_name)
+        if not destination:
+            raise HTTPException(status_code=404, detail="Destination not found")
+        return {
+            "id": destination.id,
+            "name": destination.name,
+            "details": destination.details,
+            "country": destination.country,
+            "average_price": destination.average_price,
+            "average_temperature": destination.average_temperature,
+            "average_weather": destination.average_weather,
+        }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

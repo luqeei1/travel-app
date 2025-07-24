@@ -65,7 +65,7 @@ function MapController({ center }: { center: [number, number] | null }) {
   
   useEffect(() => {
     if (center) {
-      map.setView(center, 13);
+      map.setView(center, 7);
     }
   }, [center, map]);
   
@@ -249,7 +249,7 @@ const Map = () => {
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                 placeholder="Search for cities, landmarks, or addresses..."
                 value={search}
-                onChange={(e) => {setSearch(e.target.value); setViewSaved(false);}}
+                onChange={(e) => {setSearch(e.target.value); setViewSaved(false); }}
               />
               {error && (
                 <p className="absolute left-0 -bottom-5 text-red-500 text-xs">
@@ -262,6 +262,19 @@ const Map = () => {
               className="px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors shadow-sm"
             >
               Search
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSearch(''); 
+                setQuery('');
+                setViewSaved(false);
+                setMarkerPosition(null);
+                restoreMapToInitialPosition();
+              }} 
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors shadow-sm"
+            >
+              Reset
             </button>
           </form>
         </div>
@@ -356,6 +369,7 @@ const Map = () => {
                   type="button"
                   onClick={() => {
                     const newViewSaved = !viewSaved;
+                    setQuery('');
                     setViewSaved(newViewSaved);
                     
                    

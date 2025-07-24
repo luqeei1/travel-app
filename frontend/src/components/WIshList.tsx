@@ -1,12 +1,16 @@
 import React, { useEffect } from 'react';
 import Navbar from './Navbar';
 import type { Destination } from '../types/destination';
+import { FaGlobeAsia } from "react-icons/fa";
 import { deleteFromWishlist, getWishlist } from '../services/travelService';
+import { useNavigate } from 'react-router-dom';
 
 const WishList = () => {
   const [data, setData] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [loadingDetails, setLoadingDetails] = React.useState<{[key: string]: boolean}>({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -34,6 +38,30 @@ const WishList = () => {
     catch (error) {
       console.error('Error deleting item from wishlist:', error);
       setError(error instanceof Error ? error.message : 'Failed to delete item');
+    }
+  };
+
+  const viewDetails = async (destinationName: string) => {
+    try {
+      setLoadingDetails(prev => ({ ...prev, [destinationName]: true }));
+      
+      
+      const response = await fetch(`http://localhost:8000/travel/search-by-name/${encodeURIComponent(destinationName)}`);
+      
+      if (!response.ok) {
+        throw new Error('Destination not found in database');
+      }
+      
+      const destination = await response.json();
+      
+      
+      navigate(`/${destination.id}`);
+      
+    } catch (error) {
+      console.error('Error fetching destination details:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch destination details');
+    } finally {
+      setLoadingDetails(prev => ({ ...prev, [destinationName]: false }));
     }
   };
 
@@ -70,16 +98,32 @@ const WishList = () => {
                 key={index}
                 className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 hover:scale-105 transition-transform duration-300"
               >
-                <div className="flex items-center space-x-4 ">
-                  <div className="text-blue-500 text-2xl"> </div>
-                  <div className="text-lg font-semibold text-gray-800">{item}</div>
-                  <div className='flex flex-cols items-end justify-end w-full'>
+                <div className="flex flex-col space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <FaGlobeAsia className="text-green-500 text-2xl"/>
+                    <div className="text-lg font-semibold text-gray-800 flex-1">{item}</div>
+                  </div>
+                  
+                  <div className="flex space-x-2">
                     <button
-                      className="ml-auto bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
-                      onClick={() => deleteItem(item)}>
+                      onClick={() => viewDetails(item)}
+                      disabled={loadingDetails[item]}
+                      className={`flex-1 py-2 px-4 rounded-md transition-colors ${
+                        loadingDetails[item]
+                          ? 'bg-gray-400 cursor-not-allowed text-white'
+                          : 'bg-blue-500 hover:bg-blue-600 text-white'
+                      }`}
+                    >
+                      {loadingDetails[item] ? 'Loading...' : 'View Details'}
+                    </button>
+                    
+                    <button
+                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+                      onClick={() => deleteItem(item)}
+                    >
                       Delete
                     </button>
-                  </div> 
+                  </div>
                 </div>
               </div>
             ))}
