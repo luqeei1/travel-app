@@ -39,10 +39,9 @@ function GeocodeControl({
         if (data.length > 0) {
           const { lat, lon } = data[0];
           const position: [number, number] = [parseFloat(lat), parseFloat(lon)];
-          map.setView(position, 13);
+          map.setView(position, 5);
           setMarkerPosition(position);
           
-          // Call the callback if provided
           if (onLocationFound) {
             onLocationFound(query, position);
           }
@@ -87,6 +86,11 @@ const Map = () => {
   const [savedLocationCoords, setSavedLocationCoords] = useState<{[key: string]: [number, number]}>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [savedMarkerPosition, setSavedMarkerPosition] = useState<[number, number] | null>(null);
+  const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
+
+  
+  const initialCenter: [number, number] = [50, -0.1];
+  const initialZoom = 5;
 
   const navigate = useNavigate();
 
@@ -103,12 +107,30 @@ const Map = () => {
     fetchSavedLocations();
   }, []);
 
+  
   useEffect(() => {
-    setCurrentIndex(0);
+    const savedIndex = localStorage.getItem('mapCurrentIndex');
+    const savedViewState = localStorage.getItem('mapViewSaved');
+    
+    if (savedIndex !== null && savedLocations.length > 0) {
+      const index = parseInt(savedIndex, 10);
+      if (index >= 0 && index < savedLocations.length) {
+        setCurrentIndex(index);
+      }
+    }
+    
+    if (savedViewState === 'true') {
+      setViewSaved(true);
+    }
   }, [savedLocations]);
 
   useEffect(() => {
-    // Show the current location on the map when viewSaved is toggled or index changes
+    if (savedLocations.length === 0) {
+      setCurrentIndex(0);
+    }
+  }, [savedLocations]);
+
+  useEffect(() => {
     if (viewSaved && savedLocations.length > 0 && savedLocations[currentIndex]) {
       geocodeAndShowLocation(savedLocations[currentIndex][0]);
     } else {
@@ -122,12 +144,10 @@ const Map = () => {
   };
 
   const handleLocationFound = (name: string, coords: [number, number]) => {
-    // Store the coordinates for this location
     setSavedLocationCoords(prev => ({ ...prev, [name]: coords }));
   };
 
   const geocodeAndShowLocation = async (locationName: string) => {
-    // Check if we already have coordinates for this location
     if (savedLocationCoords[locationName]) {
       setSavedMarkerPosition(savedLocationCoords[locationName]);
       return savedLocationCoords[locationName];
@@ -185,9 +205,20 @@ const Map = () => {
     await handleSave();
   };
 
+  
+  const restoreMapToInitialPosition = () => {
+    if (mapInstance) {
+      mapInstance.setView(initialCenter, initialZoom);
+    }
+  };
+
   const handlePrev = () => {
     const newIndex = currentIndex === 0 ? savedLocations.length - 1 : currentIndex - 1;
     setCurrentIndex(newIndex);
+    
+   
+    localStorage.setItem('mapCurrentIndex', newIndex.toString());
+    
     if (savedLocations[newIndex]) {
       geocodeAndShowLocation(savedLocations[newIndex][0]);
     }
@@ -196,6 +227,10 @@ const Map = () => {
   const handleNext = () => {
     const newIndex = currentIndex === savedLocations.length - 1 ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
+    
+    
+    localStorage.setItem('mapCurrentIndex', newIndex.toString());
+    
     if (savedLocations[newIndex]) {
       geocodeAndShowLocation(savedLocations[newIndex][0]);
     }
@@ -214,7 +249,7 @@ const Map = () => {
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                 placeholder="Search for cities, landmarks, or addresses..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {setSearch(e.target.value); setViewSaved(false);}}
               />
               {error && (
                 <p className="absolute left-0 -bottom-5 text-red-500 text-xs">
@@ -234,9 +269,10 @@ const Map = () => {
 
       <div className="flex-1 relative">
         <MapContainer
-          center={[51.505, -0.09]}
-          zoom={5}
+          center={initialCenter}
+          zoom={initialZoom}
           style={{ height: '100%', width: '100%' }}
+          ref={setMapInstance}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -318,7 +354,19 @@ const Map = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setViewSaved(!viewSaved)}
+                  onClick={() => {
+                    const newViewSaved = !viewSaved;
+                    setViewSaved(newViewSaved);
+                    
+                   
+                    localStorage.setItem('mapViewSaved', newViewSaved.toString());
+                    
+                  
+                    if (!newViewSaved) {
+                      localStorage.removeItem('mapCurrentIndex');
+                      restoreMapToInitialPosition();
+                    }
+                  }}
                   className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
                 >
                   {viewSaved ? 'Hide Previous' : 'Show Previous'}
@@ -347,7 +395,16 @@ const Map = () => {
                       )}
                     </ul>
                   </h3>
-                  <div onClick={() => navigate(`/DestinationJournal/${savedLocations[currentIndex][0]}`)} className="text-sm text-gray-600 hover:scale-105 duration-200 cursor-pointer hover:text-blue-500 hover:underline decoration-blue-500">
+                  <div 
+                    onClick={() => {
+                      
+                      localStorage.setItem('mapCurrentIndex', currentIndex.toString());
+                      localStorage.setItem('mapViewSaved', 'true');
+                      
+                      navigate(`/DestinationJournal/${savedLocations[currentIndex][0]}`);
+                    }} 
+                    className="text-sm text-gray-600 hover:scale-105 duration-200 cursor-pointer hover:text-blue-500 hover:underline decoration-blue-500"
+                  >
                     View Journal
                   </div>
                 </div>

@@ -144,6 +144,9 @@ async def info(destination_id: int, db: Session = Depends(get_db)):
             "name": destination.name,
             "details": destination.details,
             "country": destination.country,
+            "average_temperature": destination.average_temperature,
+            "average_weather": destination.average_weather,
+            "id": destination.id,
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

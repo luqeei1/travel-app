@@ -1,43 +1,36 @@
 // DestinationDetail.tsx
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import type { Destination } from '../types/destination';
 import { useNavigate } from 'react-router-dom';
-import { AiFillStar } from "react-icons/ai";
-import snow from '/images/snow.jpeg';
-import sun from '/images/sun.png';
+import Navbar from './Navbar';
 
-
-import ImageCarousel from './ImageCarousel';
-
-const images = [
-  snow,
-  sun,
-];
 
 export default function DestinationDetails() {
-  const isLoading = false;
   const { id } = useParams<{ id: string }>();
-  console.log('DestinationDetails id:', id);
   const navigate = useNavigate();
-  const [destination, setDestination] = useState<Destination | null>(null);
+  const [destination, setDestination] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDestination = async () => {
-
       try {
         if (!id) throw new Error('No ID provided');
         const numId = Number(id);
         if (isNaN(numId)) throw new Error('Invalid ID format');
         
+        console.log('Fetching destination with ID:', numId);
         const response = await fetch(`http://localhost:8000/travel/${numId}`);
-        if (!response.ok) throw new Error('Destination not found');
         
-        const data: Destination = await response.json();
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Received data:', data);
         setDestination(data);
       } catch (err) {
+        console.error('Error fetching destination:', err);
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setLoading(false);
@@ -47,67 +40,139 @@ export default function DestinationDetails() {
     fetchDestination();
   }, [id]);
 
-  console.log('DestinationDetails destination:', destination);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex items-center justify-center py-20">
+          <div className="text-xl text-gray-600">Loading destination details...</div>
+        </div>
+      </div>
+    );
+  }
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="container mx-auto px-4 py-20">
+          <div className="bg-red-100 border border-red-300 rounded-lg p-8 text-center">
+            <h2 className="text-2xl font-bold text-red-800 mb-4">Error</h2>
+            <p className="text-red-700 mb-6">{error}</p>
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700"
+            >
+              ← Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-return (
-  <div className="max-w-4xl mx-auto p-6">
-    <div>
-    {/* Back button */}
-    <button
-          type="button"
-          disabled={isLoading}
-          onClick ={() => navigate(-1)}
-          className={`px-4 py-2 rounded-lg transition-all ${
-            isLoading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-teal-600 hover:bg-teal-700 text-white transform hover:scale-105'
-          }`}
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50"
         >
-         ← Back to Results
+          ← Back to Results
         </button>
-    <div className='font-bold text-2xl mt-4 italic'>
-    <h1 className='text-right'>{destination?.name}</h1>
-    </div>
-    </div>
-        
-    <div className="flex items-center mt-4">
-      <AiFillStar />
-      <AiFillStar />
-      <AiFillStar />
-      <AiFillStar />
-      <AiFillStar /> 
-      temporary - replace with actual rating
-    </div>
 
-    
-
-    <span className="text-gray-700"> 4.5/5</span>
-    {destination && (
-      <>
-        <div className="mt-6 space-y-4">
-          <p className="text-xl">
-            <span className="font-semibold">Average Price:</span>
-            {destination
-              ? ` $${destination.average_price.toFixed(2)}/night`
-            : ' Not available'}
-        </p>
-            <p className="text-black-700">
-              <span className=" italic">{destination.details}</span>
-            </p>
-            <p className='text-gray-700'>
-              <span className="font-semibold">Country:</span> {destination.country}
-            </p>
+        {destination && (
+          <div className="bg-white rounded-lg shadow-sm p-8">
+            
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">{destination.name}</h1>
+              <p className="text-xl text-gray-600">{destination.country}</p>
             </div>
-            </>
+
+            
+            <div className="space-y-6">
+              
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-green-800 mb-2">Average Price</h3>
+                <p className="text-2xl font-bold text-green-900">
+                  ${destination.average_price || 'N/A'} per night
+                </p>
+              </div>
+
+              
+              {destination.average_temperature && (
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-orange-800 mb-2">Average Temperature</h3>
+                  <p className="text-2xl font-bold text-orange-900">
+                    {destination.average_temperature}°C
+                  </p>
+                </div>
+              )}
+
+              
+              {destination.average_weather && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-blue-800 mb-2">Weather</h3>
+                  <p className="text-2xl font-bold text-blue-900 capitalize">
+                    {destination.average_weather}
+                  </p>
+                </div>
+              )}
+
+              
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Description</h3>
+                <p className="text-gray-700 leading-relaxed italic">
+                  "{destination.details}"
+                </p>
+              </div>
+
+             
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Facts</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Destination ID</p>
+                    <p className="font-semibold">#{id}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Location</p>
+                    <p className="font-semibold">{destination.name}, {destination.country}</p>
+                  </div>
+                  {destination.average_weather && (
+                    <div>
+                      <p className="text-sm text-gray-600">Climate</p>
+                      <p className="font-semibold capitalize">{destination.average_weather}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm text-gray-600">Weekly Cost</p>
+                    <p className="font-semibold">${(destination.average_price || 0) * 7}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            
+            <div className="mt-8 flex gap-4">
+              <button
+                onClick={() => navigate('/')}
+                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700"
+              >
+                Explore More Destinations
+              </button>
+              <button
+                onClick={() => navigate('/Plan')}
+                className="flex-1 bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700"
+              >
+                View My Wishlist
+              </button>
+            </div>
+          </div>
         )}
-
-        <ImageCarousel images={images} altText="Reykjavik view" />
-        
+      </div>
     </div>
-
-    
-);
+  );
 }
