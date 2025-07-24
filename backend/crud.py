@@ -95,6 +95,8 @@ def get_all_destinations_from_db():
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
+
 def local_journal_fetch(name : str):
     return [entry for entry in local_journal if entry[0] == name]
 
@@ -131,3 +133,4 @@ def delete_from_wishlist(destination: str):
         print(f"Destination '{destination}' removed from wishlist")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+

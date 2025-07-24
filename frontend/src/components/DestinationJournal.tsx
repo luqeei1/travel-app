@@ -1,11 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import Navbar from './Navbar';
-import {Journal} from '../services/Visited'
+import { Journal, UpdateJournal } from '../services/Visited';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import {useState} from 'react'; 
 
 const DestinationJournal = () => {
-    const [journalEntries, setJournalEntries] = React.useState<[string, string][]>([]);
+    const [journalEntries, setJournalEntries] = useState<[string, string][]>([]);
     const { name } = useParams<{ name: string }>();
+    const [edit, setEdit] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchJournalEntries = async () => {
@@ -18,30 +22,105 @@ const DestinationJournal = () => {
             }
         };
         fetchJournalEntries();
-
     }, [name]);
 
 
-  return (
-    <div className="flex flex-col h-screen">
-  <Navbar />
-  <h2 className="text-lg font-semibold mb-4">Destination Journal</h2>
-  <p className="text-gray-600">Keep track of your travel experiences and memories.</p>
-  <p>
-    Current Destination: <span className="font-bold">[Destination Name]</span>
-  </p>
-  <p>Journal Entries:</p>
-  <ul>
-    {journalEntries.map(([date, entry], index) => (
-      <li key={index}>
-        <strong>{date}:</strong> {entry}
-      </li>
-    ))}
-  </ul>
-</div>
 
-)
+    return (
+        <div className="min-h-screen bg-amber-50">
+            <Navbar />
+            <div className="flex justify-between items-start mx-10 mt-4">
+              <button onClick={() => navigate('/map')} className="bg-amber-500 text-white px-4 py-2 rounded-md translate-x-[20%]">
+                Return to Map
+              </button>
+              </div>
+            <div className="max-w-4xl mx-auto p-6">
+                <div className="mb-8 text-center">
+                    <h1 className="text-3xl font-bold text-amber-800 mb-2">Travel Journal</h1>
+                    <p className="text-amber-600 italic">Document your adventures and cherish the memories</p>
+                </div>
 
-}
+                <div className="bg-white rounded-lg shadow-md p-6 mb-8 border-l-4 border-amber-400">
+                    <h2 className="text-2xl font-serif text-amber-900 mb-4">
+                        Currently Exploring: <span className="font-bold underline">{name || 'Unknown Destination'}</span>
+                    </h2>
+                    
+                    {journalEntries.length === 0 ? (
+                        <div className="text-center py-8">
+                            <p className="text-gray-500 italic">No entries yet. Start writing about your journey!</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {journalEntries.map(([place, journal], index) => (
+                            <div key={index} className="border-b border-amber-100 pb-6 last:border-0 last:pb-0">
+                                <div className="text-sm text-amber-600 mb-4 underline decoration-amber-400">
+                                My experiences at {place}
+                                </div>
+                                
+                                {edit ? (
+                                <div className="relative">
+                                    <textarea 
+                                    value={journal}
+                                    onChange={(e) => {
+                                        const newEntries = [...journalEntries];
+                                        newEntries[index][1] = e.target.value;
+                                        setJournalEntries(newEntries);
+                                    }}
+                                    className='
+                                        border-l-4 border-amber-200 
+                                        bg-amber-50  
+                                        text-gray-700 
+                                        rounded-none 
+                                        p-4 
+                                        w-full 
+                                        focus:outline-none 
+                                        focus:ring-1 focus:ring-amber-300 
+                                        focus:bg-amber-50
+                                        resize-none
+                                        placeholder-amber-300
+                                        leading-relaxed
+                                        overflow-y-auto
+                                        max-h-64
+                                        whitespace-pre-wrap
+                                    '
+                                    rows={5}
+                                    placeholder="Write your thoughts here..."
+                                    />
+                                </div>
+                                ) : (
+                                <div className="max-h-64 overflow-y-auto">
+                                    <pre className="
+                                    font-sans
+                                    border-l-4 border-amber-200 
+                                    bg-amber-50  
+                                    text-gray-700 
+                                    rounded-none 
+                                    p-4 
+                                    w-full 
+                                    whitespace-pre-wrap
+                                    leading-relaxed
+                                    ">
+                                    {journal}
+                                    </pre>
+                                </div>
+                                )}
+                            </div>
+                            ))}
+                        </div>
+                    )}
+                    <div className='flex justify-center mt-6'>
+                        <button onClick={() => {setEdit(!edit)}} className="bg-amber-500 text-white px-4 py-2 rounded-md">
+                            {edit ? 'Save' : 'Edit'}
+                        </button>
+                    </div>
+                </div>
 
-export default DestinationJournal
+                <div className="bg-amber-100 rounded-lg p-4 text-center">
+                    <p className="text-amber-800">"The world is a book, and those who do not travel read only a page." — Saint Augustine</p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default DestinationJournal;

@@ -33,3 +33,21 @@ export const Journal = async (name: string): Promise<[string, string][]> => {
     console.log("Fetched journal entries:", data);
     return data;
 }
+
+export const UpdateJournal = async (name: string, journal: string): Promise<void> => {
+    const response = await fetch(`http://localhost:8000/travel/update_journal/${name}/${journal}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, journal }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Error response:", response.status, errorData);
+        throw new Error("Failed to update journal entry");
+    }
+
+    console.log("Journal entry updated successfully");
+}
