@@ -345,6 +345,9 @@ const Map = () => {
                       )}
                     </ul>
                   </h3>
+                  <div className="text-sm text-gray-600 hover:scale-105 duration-200 cursor-pointer hover:text-blue-500 hover:underline decoration-blue-500">
+                    View Journal
+                  </div>
                 </div>
                 <button
                   className="text-xl font-extrabold text-blue-500 ml-4 hover:scale-105"
