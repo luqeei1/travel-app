@@ -9,7 +9,8 @@ from crud import (
     get_all_destinations_from_db,
     add_destination_to_wishlist as crud_add_to_wishlist,
     get_wishlist as crud_get_wishlist,
-    delete_from_wishlist
+    delete_from_wishlist,
+    local_journal_fetch
 )
 from sentence_transformers import SentenceTransformer
 from pydantic import BaseModel
@@ -105,6 +106,16 @@ def delete_destination_from_wishlist(destination: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.get("/local-journal/{name}")
+async def local_journal_route(name: str):
+    try:
+        entries = local_journal_fetch(name)
+        if not entries:
+            raise HTTPException(status_code=404, detail="No journal entries found for this destination")
+        return entries
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.get("/{destination_id}")
 async def info(destination_id: int, db: Session = Depends(get_db)):
     try:
@@ -125,9 +136,10 @@ async def info(destination_id: int, db: Session = Depends(get_db)):
 def add_destination_to_mongodb(destination: dict, db: Session = Depends(get_db)):
     try:
         destination_name = destination.get("name")
+        destination_journal = ""
         if not destination_name:
             raise HTTPException(status_code=400, detail="Destination name is required")
-        add_destination_to_mongodb2(destination_name)
+        add_destination_to_mongodb2(destination_name, destination_journal)
         return {"message": "Destination added successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

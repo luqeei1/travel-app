@@ -6,6 +6,7 @@ import Navbar from './Navbar';
 import { motion } from 'framer-motion';
 import { addDestinationToMongoDB } from '../services/AddDestination';
 import { Visited } from '../services/Visited';
+import { useNavigate } from 'react-router-dom';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -82,17 +83,18 @@ const Map = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [viewSaved, setViewSaved] = useState(false);
-
-  const [savedLocations, setSavedLocations] = useState<string[]>([]);
+  const [savedLocations, setSavedLocations] = useState<[string, string][]>([]);
   const [savedLocationCoords, setSavedLocationCoords] = useState<{[key: string]: [number, number]}>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [savedMarkerPosition, setSavedMarkerPosition] = useState<[number, number] | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSavedLocations = async () => {
       try {
         const locations = await Visited();
-        setSavedLocations(locations.map(dest => dest));
+        setSavedLocations(locations.map(dest => [dest[0], dest[1]]));
       } catch (err) {
         console.error('Error fetching saved locations:', err);
       }
@@ -108,7 +110,7 @@ const Map = () => {
   useEffect(() => {
     // Show the current location on the map when viewSaved is toggled or index changes
     if (viewSaved && savedLocations.length > 0 && savedLocations[currentIndex]) {
-      geocodeAndShowLocation(savedLocations[currentIndex]);
+      geocodeAndShowLocation(savedLocations[currentIndex][0]);
     } else {
       setSavedMarkerPosition(null);
     }
@@ -166,7 +168,7 @@ const Map = () => {
       await addDestinationToMongoDB(trimmedInput);
       setSuccessMessage('Location saved successfully!');
       setInput('');
-      setSavedLocations((prev) => [...prev, trimmedInput]);
+      setSavedLocations((prev) => [...prev, [trimmedInput, ""]]);
       setTimeout(() => {
         setSuccessMessage(null);
       }, 3000);
@@ -187,7 +189,7 @@ const Map = () => {
     const newIndex = currentIndex === 0 ? savedLocations.length - 1 : currentIndex - 1;
     setCurrentIndex(newIndex);
     if (savedLocations[newIndex]) {
-      geocodeAndShowLocation(savedLocations[newIndex]);
+      geocodeAndShowLocation(savedLocations[newIndex][0]);
     }
   };
 
@@ -195,7 +197,7 @@ const Map = () => {
     const newIndex = currentIndex === savedLocations.length - 1 ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
     if (savedLocations[newIndex]) {
-      geocodeAndShowLocation(savedLocations[newIndex]);
+      geocodeAndShowLocation(savedLocations[newIndex][0]);
     }
   };
 
@@ -341,11 +343,11 @@ const Map = () => {
                       {savedLocations.length === 0 ? (
                         <li>No saved locations to show.</li>
                       ) : (
-                        <li>{savedLocations[currentIndex]}</li>
+                        <li>{savedLocations[currentIndex][0]}</li>
                       )}
                     </ul>
                   </h3>
-                  <div className="text-sm text-gray-600 hover:scale-105 duration-200 cursor-pointer hover:text-blue-500 hover:underline decoration-blue-500">
+                  <div onClick={() => navigate(`/DestinationJournal/${savedLocations[currentIndex][0]}`)} className="text-sm text-gray-600 hover:scale-105 duration-200 cursor-pointer hover:text-blue-500 hover:underline decoration-blue-500">
                     View Journal
                   </div>
                 </div>

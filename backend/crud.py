@@ -17,6 +17,7 @@ wishlist_collection = os.getenv("MONGODB_WISHLIST_COLLECTION")
 
 client = MongoClient(mongodb)
 mongo_db = client[database_name]
+local_journal = []
 
 def get_ai_destinations(db: Session, query_embedding, top_k: int = 3, min_temperature: int = None, max_temperature: int = None):
     destinations = db.query(models.Destination).all()
@@ -72,11 +73,12 @@ def get_all_destinations(db: Session):
         print("destinations found") 
     return destinations
 
-def add_destination_to_mongodb2(destination: str):
+def add_destination_to_mongodb2(destination: str, journal: str):
     try:
-        mongo_db[collection_name].insert_one({"name": destination})
+        mongo_db[collection_name].insert_one({"name": destination, "journal": journal})
         print("sent to mongodb")
     except Exception as e:
+
         raise HTTPException(status_code=400, detail=str(e))
 
 def get_all_destinations_from_db():
@@ -85,10 +87,18 @@ def get_all_destinations_from_db():
         result = []
         for destination in destinations:
             destination['name'] = str(destination['name'])
-            result.append(destination['name'])
+            destination['journal'] = str(destination['journal']) if 'journal' in destination else ''
+            if destination['name'] not in [d[0] for d in local_journal]:
+                local_journal.append([destination['name'], destination['journal']])
+            result.append([destination['name'], destination['journal']])
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+def local_journal_fetch(name : str):
+    return [entry for entry in local_journal if entry[0] == name]
+
+
 
 def add_destination_to_wishlist(destination: str):
     try:
