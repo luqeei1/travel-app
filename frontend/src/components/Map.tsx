@@ -371,15 +371,14 @@ const Map = () => {
                     const newViewSaved = !viewSaved;
                     setQuery('');
                     setViewSaved(newViewSaved);
-                    
-                   
+                    setMarkerPosition(null);
+                    setSavedMarkerPosition(null);
                     localStorage.setItem('mapViewSaved', newViewSaved.toString());
+                    localStorage.removeItem('mapCurrentIndex');
+                    setInput('');
+                    setSavedMarkerPosition(null);
+                    restoreMapToInitialPosition();
                     
-                  
-                    if (!newViewSaved) {
-                      localStorage.removeItem('mapCurrentIndex');
-                      restoreMapToInitialPosition();
-                    }
                   }}
                   className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
                 >

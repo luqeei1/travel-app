@@ -8,7 +8,7 @@ import psycopg2
 load_dotenv()
 
 try:
-    SQLALCHEMY_DATABASE_URL = os.environ["SUPABASE_DATABASE_URL"]
+    SQLALCHEMY_DATABASE_URL = os.environ["LOCAL_DATABASE_URL"]
 except KeyError as e:   
     missing_key = e.args[0]
     raise RuntimeError(f"Missing environment variable: {missing_key}")
