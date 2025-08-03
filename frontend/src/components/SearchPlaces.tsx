@@ -129,7 +129,7 @@ export default function SearchPlaces() {
                       localStorage.removeItem('searchResults');
                     }
                   }}
-                  placeholder="Search for cities, countries, or landmarks..."
+                  placeholder="Search for activities, weather, landmarks and more..."
                   className={`w-full px-5 py-3 rounded-lg border focus:outline-none focus:ring-2 text-gray-700 ${
                     error ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-400 focus:border-blue-400'
                   }`}
