@@ -16,6 +16,7 @@ from crud import (
 )
 from sentence_transformers import SentenceTransformer
 from pydantic import BaseModel
+from crud import delete_from_previous
 
 router = APIRouter(prefix="/travel", tags=["travel"])
 model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -77,6 +78,15 @@ async def get_previous_destinations_from_mongo():
         if not destinations:
             raise HTTPException(status_code=404, detail="No previous destinations found")
         return destinations
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.delete("/previous/{destination_name}")
+async def delete_previous_destination(destination_name: str):
+    try:
+        print(f"Deleting previous destination: {destination_name}")
+        delete_from_previous(destination_name)
+        return {"message": "Deleted previous destination successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

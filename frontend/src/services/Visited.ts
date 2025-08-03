@@ -15,6 +15,21 @@ export const Visited = async (): Promise<[string, string][]> => {
     return JSON.parse(data) as [string, string][];
 };
 
+export const DeleteVisited = async (name: string): Promise<void> => {
+    const response = await fetch(`http://localhost:8000/travel/previous/${name}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (!response.ok) {
+        const errorData = await response.text();
+        console.error("Error response:", response.status, errorData);
+        throw new Error("Failed to delete visited destination");
+    }
+    console.log("Deleted visited destination:", name);
+}
+
 export const Journal = async (name: string): Promise<[string, string][]> => {
     const response = await fetch(`http://localhost:8000/travel/local-journal/${name}`, {
         method: "GET",

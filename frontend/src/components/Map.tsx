@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { addDestinationToMongoDB } from '../services/AddDestination';
 import { Visited } from '../services/Visited';
 import { useNavigate } from 'react-router-dom';
+import { DeleteVisited } from '../services/Visited';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -408,17 +409,42 @@ const Map = () => {
                       )}
                     </ul>
                   </h3>
-                  <div 
-                    onClick={() => {
-                      
-                      localStorage.setItem('mapCurrentIndex', currentIndex.toString());
-                      localStorage.setItem('mapViewSaved', 'true');
-                      
-                      navigate(`/DestinationJournal/${savedLocations[currentIndex][0]}`);
-                    }} 
-                    className="text-sm text-gray-600 hover:scale-105 duration-200 cursor-pointer hover:text-blue-500 hover:underline decoration-blue-500"
-                  >
-                    View Journal
+                  <div className="flex flex-row gap-4 justify-center items-center mt-2">
+                    <div 
+                      onClick={() => {
+                        localStorage.setItem('mapCurrentIndex', currentIndex.toString());
+                        localStorage.setItem('mapViewSaved', 'true');
+                        navigate(`/DestinationJournal/${savedLocations[currentIndex][0]}`);
+                      }} 
+                      className="text-sm text-gray-600 hover:scale-105 duration-200 cursor-pointer hover:text-blue-500 hover:underline decoration-blue-500"
+                    >
+                      View Journal
+                    </div>
+                    <div>
+                      <p
+                        onClick={() => {
+                          const destinationName = savedLocations[currentIndex][0];
+                          DeleteVisited(destinationName)
+                            .then(() => {
+                              setSavedLocations((prev) => prev.filter((loc) => loc[0] !== destinationName));
+                              setSavedMarkerPosition(null);
+                              setSavedLocationCoords((prev) => {
+                                const newCoords = { ...prev };
+                                delete newCoords[destinationName];
+                                return newCoords;
+                              });
+                              if (currentIndex >= savedLocations.length) {
+                                setCurrentIndex(savedLocations.length - 1);
+                              }
+                              localStorage.removeItem('mapCurrentIndex');
+                              localStorage.removeItem('mapViewSaved');
+                              restoreMapToInitialPosition(); 
+                          });
+                        }}
+                       className="text-sm text-red-600 hover:scale-105 duration-200 cursor-pointer hover:text-red-700 hover:underline decoration-red-700">
+                        Delete
+                      </p>
+                    </div>
                   </div>
                 </div>
                 <button

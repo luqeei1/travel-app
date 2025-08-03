@@ -159,3 +159,15 @@ def get_destination_by_name(db: Session, destination_name: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+def delete_from_previous(destination_name: str):
+    try:
+        result = mongo_db[collection_name].delete_one({"name": destination_name})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Destination not found in previous destinations")
+        print(f"Previous destination '{destination_name}' deleted successfully")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"message": "Destination removed from previous destinations successfully"}
+
+
+
