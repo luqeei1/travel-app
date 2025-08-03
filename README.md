@@ -61,6 +61,8 @@ A full-stack AI-powered travel recommendation application that helps users disco
 
 ### ⚙️ Backend Setup
 
+On 2 different terminals, please run the following commands: 
+
 ```bash
 cd backend
 venv\Scripts\Activate
