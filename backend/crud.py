@@ -76,6 +76,7 @@ def get_all_destinations(db: Session):
 def add_destination_to_mongodb2(destination: str, journal: str):
     try:
         mongo_db[collection_name].insert_one({"name": destination, "journal": journal})
+        get_all_destinations_from_db()  # Refresh local journal
         print("sent to mongodb")
     except Exception as e:
 
@@ -98,6 +99,9 @@ def get_all_destinations_from_db():
 
 
 def local_journal_fetch(name : str):
+    if not local_journal:
+        get_all_destinations_from_db()
+
     return [entry for entry in local_journal if entry[0] == name]
 
 def UpdateJournal(name: str, journal: str):
@@ -112,6 +116,7 @@ def UpdateJournal(name: str, journal: str):
         
         mongo_db[collection_name].update_one({"name": name}, {"$set": {"journal": journal}})
         print(f"Updated journal for {name} in MongoDB")
+        get_all_destinations_from_db()  # Refresh local journal
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

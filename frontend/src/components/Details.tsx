@@ -76,12 +76,6 @@ export default function DestinationDetails() {
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <button
-          onClick={() => navigate(-1)}
-          className="mb-6 bg-white border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50"
-        >
-          ← Back to Results
-        </button>
 
         {destination && (
           <div className="bg-white rounded-lg shadow-sm p-8">

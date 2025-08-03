@@ -61,8 +61,35 @@ const DestinationJournal = () => {
                     </h2>
                     
                     {journalEntries.length === 0 ? (
-                        <div className="text-center py-8">
-                            <p className="text-gray-500 italic">No entries yet. Start writing about your journey!</p>
+                        <div className="relative">
+                            <textarea 
+                                value=""
+                                onChange={(e) => {
+                                    
+                                    if (!name) return;
+                                    setJournalEntries([[name, e.target.value]]);
+                                    setEdit(true);
+                                }}
+                                className='
+                                    border-l-4 border-amber-200 
+                                    bg-amber-50  
+                                    text-gray-700 
+                                    rounded-none 
+                                    p-4 
+                                    w-full 
+                                    focus:outline-none 
+                                    focus:ring-1 focus:ring-amber-300 
+                                    focus:bg-amber-50
+                                    resize-none
+                                    placeholder-amber-400
+                                    leading-relaxed
+                                    overflow-y-auto
+                                    max-h-64
+                                    whitespace-pre-wrap
+                                '
+                                rows={5}
+                                placeholder="No entries yet. Start writing about your journey!"
+                            />
                         </div>
                     ) : (
                         <div className="space-y-6">
