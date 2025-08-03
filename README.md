@@ -64,7 +64,7 @@ A full-stack AI-powered travel recommendation application that helps users disco
 ```bash
 cd backend
 venv\Scripts\Activate
-pip install ... # I will update this soon
+pip install -r requirements.txt# I will update this soon
 uvicorn main:app --reload
 ```
 
