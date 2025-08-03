@@ -1,6 +1,6 @@
 # 🌍 Travel Recommendation App
 
-A full-stack AI-powered travel recommendation application that helps users discover, save, and journal about travel destinations. Built with **React (TypeScript)**, **FastAPI**, **PostgreSQL**, and **MongoDB**.
+A full-stack AI-powered travel recommendation application that helps users discover, save, and journal about travel destinations. Built with **React (TypeScript)**, **FastAPI**, **PostgreSQL**, and **MongoDB**. Please note that due to storage issues, deployement was not possible. The semantic analysis in this project uses the 'all-MiniLM-L6-v2' model, chosen after thorough comparison with the 'paraphrase-MiniLM-L3-v2' model. Testing demonstrated that 'all-MiniLM-L6-v2' consistently provides more accurate and relevant results. 
 
 ---
 
