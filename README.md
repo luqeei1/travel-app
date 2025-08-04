@@ -59,6 +59,42 @@ A full-stack AI-powered travel recommendation application that helps users disco
 
 ## 🚀 Getting Started
 
+## 🗄️ PostgreSQL Setup & Environment Configuration
+
+This project uses a PostgreSQL database to store destination metadata and sentence embeddings for semantic search.
+
+---
+
+### 🔧 Step 1: Install PostgreSQL
+
+Make sure PostgreSQL is installed and running locally.  
+Download from: https://www.postgresql.org/download/
+
+---
+
+### 🛠️ Step 2: Create the Database
+
+In your terminal, run:
+
+```bash
+createdb travelapp
+```
+
+now, run 
+
+```bash
+psql -U your_postgres_username -d travelapp -f db/travel_clean.sql 
+```
+---
+
+### ⚙️ .env
+
+Please set up the required settings in the .env file before then creating a .env file with the required information. 
+
+---
+
+### ✅ Running
+
 On 2 different terminals, please run the following commands : 
 
 ### ⚙️ Backend Setup
