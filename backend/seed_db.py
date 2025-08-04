@@ -1,82 +1,50 @@
+import pandas as pd
 import numpy as np
+import ast
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from models import Base, Destination
-from sentence_transformers import SentenceTransformer
 import os
 
-# 1. Initialize database
 Base.metadata.create_all(bind=engine)
 
-# 2. Initialize embedding model
-model = SentenceTransformer('all-MiniLM-L6-v2')
-print(f"Model embedding dimension: {model.get_sentence_embedding_dimension()}")
+CSV_PATH = '../database/backup/destinations_backup.csv'
 
-DESTINATIONS = [
-  {
-  "name": "Mostar",
-  "details": "Bosnian town famous for its iconic Stari Most bridge and Ottoman architecture.",
-  "country": "Bosnia and Herzegovina",
-  "region": "Europe",
-  "average_price": 850,
-  "average_temperature": 18,
-  "average_weather": "Mild"
-},
-{
-  "name": "Lucca",
-  "details": "Tuscan city in Italy known for its Renaissance walls and charming old town.",
-  "country": "Italy",
-  "region": "Europe",
-  "average_price": 1400,
-  "average_temperature": 19,
-  "average_weather": "Mild"
-},
-{
-  "name": "Puebla",
-  "details": "Mexican city famous for colonial architecture, culinary heritage, and volcano views.",
-  "country": "Mexico",
-  "region": "North America",
-  "average_price": 1100,
-  "average_temperature": 17,
-  "average_weather": "Mild"
-}
+def parse_embedding(embedding_str):
+    """
+    Convert the embedding string from CSV back into a numpy array,
+    then to bytes for Postgres bytea storage.
+    """
+    embedding_list = ast.literal_eval(embedding_str)
+    embedding_array = np.array(embedding_list, dtype=np.float32)
+    return embedding_array.tobytes()
 
-]
-
-
-    
-
-
-
-
-   
-
-def seed_database():
+def seed_database_from_csv():
     db = SessionLocal()
     try:
-        for dest_data in DESTINATIONS:
-            # Generate embedding from name + details
-            text = f"{dest_data['name']} {dest_data['details']}"
-            embedding = model.encode(text)
-            
-            # Create destination with all fields
+        df = pd.read_csv(CSV_PATH)
+
+        for _, row in df.iterrows():
+            embedding_bytes = parse_embedding(row['embedding'])
+
             destination = Destination(
-                name=dest_data['name'],
-                details=dest_data['details'],
-                country=dest_data['country'],
-                region=dest_data['region'],
-                average_price=dest_data['average_price'],
-                average_temperature=dest_data['average_temperature'],
-                average_weather=dest_data['average_weather'],
-                similarity_rating=0.0,  # Initialize rating
-                embedding=embedding.tobytes()  # Store as bytes
-            )
-            
+                id=int(row['id']),
+                name=str(row['name']),
+                details=str(row['details']),
+                country=str(row['country']),
+                region=str(row['region']),
+                average_price=int(row['average_price']),
+                similarity_rating=float(row.get('similarity_rating', 0.0)),
+                average_temperature=int(row['average_temperature']),
+                average_weather=str(row['average_weather']),
+                embedding=embedding_bytes
+                )
+
             db.add(destination)
-        
+
         db.commit()
-        print(f"Successfully seeded {len(DESTINATIONS)} destinations")
-        
+        print(f"Successfully seeded {len(df)} destinations from CSV")
+
     except Exception as e:
         db.rollback()
         print(f"Error seeding database: {e}")
@@ -85,4 +53,4 @@ def seed_database():
         db.close()
 
 if __name__ == "__main__":
-    seed_database()
+    seed_database_from_csv()
