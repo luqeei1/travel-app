@@ -77,6 +77,7 @@ Download from: https://www.postgresql.org/download/
 1. Ensure you have:  
    - PostgreSQL running.  
    - A database
+   - Downloaded travel_clean.sql
      
 2. Run :
    ```bash
