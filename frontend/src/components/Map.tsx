@@ -422,24 +422,50 @@ const Map = () => {
                     </div>
                     <div>
                       <p
-                        onClick={() => {
+                        onClick={async () => {
                           const destinationName = savedLocations[currentIndex][0];
-                          DeleteVisited(destinationName)
-                            .then(() => {
-                              setSavedLocations((prev) => prev.filter((loc) => loc[0] !== destinationName));
-                              setSavedMarkerPosition(null);
-                              setSavedLocationCoords((prev) => {
-                                const newCoords = { ...prev };
-                                delete newCoords[destinationName];
-                                return newCoords;
-                              });
-                              if (currentIndex >= savedLocations.length) {
-                                setCurrentIndex(savedLocations.length - 1);
-                              }
+                          try {
+                            await DeleteVisited(destinationName);
+                            
+                            
+                            const updatedLocations = savedLocations.filter((loc) => loc[0] !== destinationName);
+                            setSavedLocations(updatedLocations);
+                            
+                            
+                            setSavedMarkerPosition(null);
+                            
+                            
+                            setSavedLocationCoords((prev) => {
+                              const newCoords = { ...prev };
+                              delete newCoords[destinationName];
+                              return newCoords;
+                            });
+                            
+                            
+                            if (updatedLocations.length === 0) {
+                              
+                              setViewSaved(false);
+                              setCurrentIndex(0);
                               localStorage.removeItem('mapCurrentIndex');
                               localStorage.removeItem('mapViewSaved');
-                              restoreMapToInitialPosition(); 
-                          });
+                              restoreMapToInitialPosition();
+                            } else {
+                              
+                              let newIndex = currentIndex;
+                              if (currentIndex >= updatedLocations.length) {
+                                newIndex = updatedLocations.length - 1;
+                              }
+                              setCurrentIndex(newIndex);
+                              localStorage.setItem('mapCurrentIndex', newIndex.toString());
+                              
+                              
+                              if (updatedLocations[newIndex]) {
+                                geocodeAndShowLocation(updatedLocations[newIndex][0]);
+                              }
+                            }
+                          } catch (error) {
+                            console.error('Error deleting destination:', error);
+                          }
                         }}
                        className="text-sm text-red-600 hover:scale-105 duration-200 cursor-pointer hover:text-red-700 hover:underline decoration-red-700">
                         Delete
