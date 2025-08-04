@@ -22,7 +22,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: destinations; Type: TABLE; Schema: public; Owner: postgres
+-- Name: destinations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.destinations (
@@ -39,10 +39,8 @@ CREATE TABLE public.destinations (
 );
 
 
-ALTER TABLE public.destinations OWNER TO postgres;
-
 --
--- Name: destinations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: destinations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.destinations_id_seq
@@ -54,24 +52,22 @@ CREATE SEQUENCE public.destinations_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.destinations_id_seq OWNER TO postgres;
-
 --
--- Name: destinations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: destinations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.destinations_id_seq OWNED BY public.destinations.id;
 
 
 --
--- Name: destinations id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: destinations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.destinations ALTER COLUMN id SET DEFAULT nextval('public.destinations_id_seq'::regclass);
 
 
 --
--- Data for Name: destinations; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: destinations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.destinations (id, name, details, country, region, average_price, similarity_rating, average_temperature, average_weather, embedding) FROM stdin;
@@ -289,14 +285,14 @@ COPY public.destinations (id, name, details, country, region, average_price, sim
 
 
 --
--- Name: destinations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: destinations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.destinations_id_seq', 273, true);
 
 
 --
--- Name: destinations destinations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: destinations destinations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.destinations
@@ -304,14 +300,14 @@ ALTER TABLE ONLY public.destinations
 
 
 --
--- Name: ix_destinations_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: ix_destinations_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_destinations_id ON public.destinations USING btree (id);
 
 
 --
--- Name: ix_destinations_name; Type: INDEX; Schema: public; Owner: postgres
+-- Name: ix_destinations_name; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX ix_destinations_name ON public.destinations USING btree (name);
