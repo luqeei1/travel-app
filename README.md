@@ -74,32 +74,21 @@ Download from: https://www.postgresql.org/download/
 
 ### 🛠️ Step 2: Create the Database
 
----
-
-### 📊 How to Import the CSV to PostgreSQL  
 1. Ensure you have:  
    - PostgreSQL running.  
-   - A table called `destinations` with this schema:  
-     ```sql
-     CREATE TABLE destinations (
-         id SERIAL PRIMARY KEY,
-         name TEXT,
-         details TEXT,
-         country TEXT,
-         region TEXT,
-         average_price INTEGER,
-         similarity_rating FLOAT,
-         average_temperature INTEGER,
-         average_weather TEXT,
-         embedding BYTEA
-     );
-     ```  
-2. Run:  
+   - A database
+     
+2. Run :
    ```bash
-   pip install -r requirements.txt
-   python seed_db.py
-   ```
    
+   psql -U postgres -d travel_recommender_test -f travel_clean.sql
+
+   ```
+
+You should see 210 rows in the table. 
+
+I have added a CSV file for those interested in looking at the data used within the app. 
+
 
 ### ⚙️ .env
 
