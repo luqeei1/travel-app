@@ -85,10 +85,13 @@ now, run
 ```bash
 psql -U your_postgres_username -d travelapp -f db/travel_clean.sql 
 ```
+---
 
 ### ⚙️ .env
 
 Please set up the required settings in the .env file before then creating a .env file with the required information. 
+
+---
 
 ### ✅ Running
 
