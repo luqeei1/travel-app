@@ -28,7 +28,6 @@ def seed_database_from_csv():
             embedding_bytes = parse_embedding(row['embedding'])
 
             destination = Destination(
-                id=int(row['id']),
                 name=str(row['name']),
                 details=str(row['details']),
                 country=str(row['country']),
