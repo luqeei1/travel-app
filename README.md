@@ -82,7 +82,7 @@ Download from: https://www.postgresql.org/download/
 2. Run :
    ```bash
    
-   psql -U postgres -d travel_recommender_test -f travel_clean.sql
+   psql -U postgres -d your_database_name -f travel_clean.sql
 
    ```
 
