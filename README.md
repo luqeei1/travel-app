@@ -74,18 +74,32 @@ Download from: https://www.postgresql.org/download/
 
 ### 🛠️ Step 2: Create the Database
 
-In your terminal, run:
-
-```bash
-createdb travelapp
-```
-
-now, run 
-
-```bash
-psql -U your_postgres_username -d travelapp -f db/travel_clean.sql 
-```
 ---
+
+### 📊 How to Import the CSV to PostgreSQL  
+1. Ensure you have:  
+   - PostgreSQL running.  
+   - A table called `destinations` with this schema:  
+     ```sql
+     CREATE TABLE destinations (
+         id SERIAL PRIMARY KEY,
+         name TEXT,
+         details TEXT,
+         country TEXT,
+         region TEXT,
+         average_price INTEGER,
+         similarity_rating FLOAT,
+         average_temperature INTEGER,
+         average_weather TEXT,
+         embedding BYTEA
+     );
+     ```  
+2. Run:  
+   ```bash
+   pip install -r requirements.txt
+   python seed_db.py
+   ```
+   
 
 ### ⚙️ .env
 
@@ -102,8 +116,8 @@ On 2 different terminals, please run the following commands :
 
 ```bash
 cd backend
+python -m venv venv
 venv\Scripts\Activate
-pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
