@@ -59,12 +59,15 @@ A full-stack AI-powered travel recommendation application that helps users disco
 
 ## 🚀 Getting Started
 
+On 2 different terminals, please run the following commands : 
+
 ### ⚙️ Backend Setup
+
 
 ```bash
 cd backend
 venv\Scripts\Activate
-pip install ... # I will update this soon
+pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
