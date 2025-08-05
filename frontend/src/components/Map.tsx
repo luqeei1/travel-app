@@ -28,7 +28,11 @@ function GeocodeControl({
   const map = useMap();
 
   useEffect(() => {
-    if (!query) return;
+    if (!query) {
+      
+      setMarkerPosition(null);
+      return;
+    }
 
     const fetchCoords = async () => {
       try {
@@ -48,10 +52,12 @@ function GeocodeControl({
           }
         } else {
           alert('Location not found');
+          setMarkerPosition(null);
         }
       } catch (err) {
         console.error(err);
         alert('Error fetching location');
+        setMarkerPosition(null);
       }
     };
 
@@ -66,7 +72,7 @@ function MapController({ center }: { center: [number, number] | null }) {
   
   useEffect(() => {
     if (center) {
-      map.setView(center, 7);
+      map.setView(center, 8);
     }
   }, [center, map]);
   
@@ -141,6 +147,8 @@ const Map = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setViewSaved(false); 
+    setSavedMarkerPosition(null); 
     setQuery(search);
   };
 
@@ -267,11 +275,13 @@ const Map = () => {
             <button
               type="button"
               onClick={() => {
+                setMarkerPosition(null);
+                setSavedMarkerPosition(null);
                 setSearch(''); 
                 setQuery('');
                 setViewSaved(false);
-                setMarkerPosition(null);
-                restoreMapToInitialPosition();
+                localStorage.removeItem('mapCurrentIndex');
+                localStorage.removeItem('mapViewSaved');
               }} 
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors shadow-sm"
             >
