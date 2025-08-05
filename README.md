@@ -59,14 +59,14 @@ A full-stack AI-powered travel recommendation application that helps users disco
 
 ## 📷 Demos
 
-### 🔍 Search Functionality
-[![Search](https://www.youtube.com/watch?v=ZaKiqpYi-Fg)
+### 🔍 Search Functionality  
+[![Search](https://img.youtube.com/vi/ZaKiqpYi-Fg/0.jpg)](https://www.youtube.com/watch?v=ZaKiqpYi-Fg)
 
-### 🌍 Map and Journal
-[![Map]([https://img.youtube.com/vi/ghi456JKL/0.jpg)](https://www.youtube.com/watch?v=ghi456JKL](https://www.youtube.com/watch?v=RQkjUzeZE-8))
+### 🌍 Map and Journal  
+[![Map](https://img.youtube.com/vi/RQkjUzeZE-8/0.jpg)](https://www.youtube.com/watch?v=RQkjUzeZE-8)
 
-### ⭐ Wishlist
-[![Wishlist]([https://img.youtube.com/vi/mno789XYZ/0.jpg)](https://www.youtube.com/watch?v=mno789XYZ](https://www.youtube.com/watch?v=JW839q65w9s))
+### ⭐ Wishlist  
+[![Wishlist](https://img.youtube.com/vi/JW839q65w9s/0.jpg)](https://www.youtube.com/watch?v=JW839q65w9s)
 
 
 ## 🚀 Getting Started
