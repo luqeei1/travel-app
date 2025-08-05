@@ -57,6 +57,18 @@ A full-stack AI-powered travel recommendation application that helps users disco
 - **Nominatim OpenStreetMap** for geocoding and location search  
 ---
 
+## 📷 Demos
+
+### 🔍 Search Functionality
+[![Search](https://www.youtube.com/watch?v=ZaKiqpYi-Fg)
+
+### 🌍 Map and Journal
+[![Map]([https://img.youtube.com/vi/ghi456JKL/0.jpg)](https://www.youtube.com/watch?v=ghi456JKL](https://www.youtube.com/watch?v=RQkjUzeZE-8))
+
+### ⭐ Wishlist
+[![Wishlist]([https://img.youtube.com/vi/mno789XYZ/0.jpg)](https://www.youtube.com/watch?v=mno789XYZ](https://www.youtube.com/watch?v=JW839q65w9s))
+
+
 ## 🚀 Getting Started
 
 ## 🗄️ PostgreSQL Setup & Environment Configuration
