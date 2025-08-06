@@ -140,6 +140,8 @@ async def local_journal_route(name: str):
         if not entries:
             raise HTTPException(status_code=404, detail="No journal entries found for this destination")
         return entries
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

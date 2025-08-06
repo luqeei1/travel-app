@@ -89,9 +89,9 @@ export default function DestinationDetails() {
             <div className="space-y-6">
               
               <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-green-800 mb-2">Average Price</h3>
+                <h3 className="text-lg font-semibold text-green-800 mb-2">Average Price </h3>
                 <p className="text-2xl font-bold text-green-900">
-                  ${destination.average_price || 'N/A'} per night
+                  ${destination.average_price || 'N/A'} per week
                 </p>
               </div>
 
@@ -141,10 +141,6 @@ export default function DestinationDetails() {
                       <p className="font-semibold capitalize">{destination.average_weather}</p>
                     </div>
                   )}
-                  <div>
-                    <p className="text-sm text-gray-600">Weekly Cost</p>
-                    <p className="font-semibold">${(destination.average_price || 0) * 7}</p>
-                  </div>
                 </div>
               </div>
             </div>

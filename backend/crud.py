@@ -96,6 +96,7 @@ def get_all_destinations_from_db():
 def local_journal_fetch(name : str):
     if not local_journal:
         get_all_destinations_from_db()
+        
     return local_journal.get(name)
 
 def UpdateJournal(name: str, journal: str):
