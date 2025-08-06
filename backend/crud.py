@@ -17,7 +17,7 @@ wishlist_collection = os.getenv("MONGODB_WISHLIST_COLLECTION")
 
 client = MongoClient(mongodb)
 mongo_db = client[database_name]
-local_journal = []
+local_journal = {}
 
 def get_ai_destinations(db: Session, query_embedding, top_k: int = 3, min_temperature: int = None, max_temperature: int = None):
     destinations = db.query(models.Destination).all()
@@ -56,7 +56,6 @@ def get_ai_destinations(db: Session, query_embedding, top_k: int = 3, min_temper
 
     return sorted(results, key=lambda x: x["ai_similarity"], reverse=True)[:top_k]
 
-
 def get_info_by_id(db: Session, destination_id: int):
     if not db.query(models.Destination).filter(models.Destination.id == destination_id).first():
         print("This destination does not exist")
@@ -76,10 +75,9 @@ def get_all_destinations(db: Session):
 def add_destination_to_mongodb2(destination: str, journal: str):
     try:
         mongo_db[collection_name].insert_one({"name": destination, "journal": journal})
-        get_all_destinations_from_db()  # Refresh local journal
+        get_all_destinations_from_db()
         print("sent to mongodb")
     except Exception as e:
-
         raise HTTPException(status_code=400, detail=str(e))
 
 def get_all_destinations_from_db():
@@ -89,38 +87,27 @@ def get_all_destinations_from_db():
         for destination in destinations:
             destination['name'] = str(destination['name'])
             destination['journal'] = str(destination['journal']) if 'journal' in destination else ''
-            if destination['name'] not in [d[0] for d in local_journal]:
-                local_journal.append([destination['name'], destination['journal']])
+            local_journal[destination['name']] = destination['journal']
             result.append([destination['name'], destination['journal']])
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-
-
 def local_journal_fetch(name : str):
     if not local_journal:
         get_all_destinations_from_db()
-
-    return [entry for entry in local_journal if entry[0] == name]
+    return local_journal.get(name)
 
 def UpdateJournal(name: str, journal: str):
     try:
-        for i, entry in enumerate(local_journal):
-            if entry[0] == name:
-                local_journal[i][1] = journal
-                break
-        else:
+        if name not in local_journal:
             raise HTTPException(status_code=404, detail="Destination not found in local journal")
-        
-        
+        local_journal[name] = journal
         mongo_db[collection_name].update_one({"name": name}, {"$set": {"journal": journal}})
         print(f"Updated journal for {name} in MongoDB")
-        get_all_destinations_from_db()  # Refresh local journal
+        get_all_destinations_from_db()
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
 
 def add_destination_to_wishlist(destination: str):
     try:
@@ -155,7 +142,6 @@ def delete_from_wishlist(destination: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 def get_destination_by_name(db: Session, destination_name: str):
-    """Search for destination by name (case-insensitive partial match)"""
     try:
         destination = db.query(models.Destination).filter(
             models.Destination.name.ilike(f"%{destination_name}%")
@@ -173,6 +159,3 @@ def delete_from_previous(destination_name: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {"message": "Destination removed from previous destinations successfully"}
-
-
-

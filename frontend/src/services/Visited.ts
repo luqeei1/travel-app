@@ -30,7 +30,7 @@ export const DeleteVisited = async (name: string): Promise<void> => {
     console.log("Deleted visited destination:", name);
 }
 
-export const Journal = async (name: string): Promise<[string, string][]> => {
+export const Journal = async (name: string): Promise<string> => {
     const response = await fetch(`http://localhost:8000/travel/local-journal/${name}`, {
         method: "GET",
         headers: {
@@ -44,8 +44,8 @@ export const Journal = async (name: string): Promise<[string, string][]> => {
         throw new Error("Failed to fetch journal entries");
     }
 
-    const data = await response.json() as [string, string][];
-    console.log("Fetched journal entries:", data);
+    const data = await response.json() as string;
+    console.log("Fetched journal entry:", data);
     return data;
 }
 
