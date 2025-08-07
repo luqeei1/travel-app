@@ -88,12 +88,7 @@ export default function DestinationDetails() {
             
             <div className="space-y-6">
               
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-green-800 mb-2">Average Price </h3>
-                <p className="text-2xl font-bold text-green-900">
-                  ${destination.average_price || 'N/A'} per week
-                </p>
-              </div>
+              
 
               
               {destination.average_temperature && (
@@ -108,7 +103,7 @@ export default function DestinationDetails() {
               
               {destination.average_weather && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-blue-800 mb-2">Weather</h3>
+                  <h3 className="text-lg font-semibold text-blue-800 mb-2">Climate</h3>
                   <p className="text-2xl font-bold text-blue-900 capitalize">
                     {destination.average_weather}
                   </p>
@@ -123,26 +118,6 @@ export default function DestinationDetails() {
                 </p>
               </div>
 
-             
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Facts</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Destination ID</p>
-                    <p className="font-semibold">#{id}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Location</p>
-                    <p className="font-semibold">{destination.name}, {destination.country}</p>
-                  </div>
-                  {destination.average_weather && (
-                    <div>
-                      <p className="text-sm text-gray-600">Climate</p>
-                      <p className="font-semibold capitalize">{destination.average_weather}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
 
             
