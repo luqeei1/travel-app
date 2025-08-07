@@ -156,7 +156,6 @@ async def search_destination_by_name(destination_name: str, db: Session = Depend
             "name": destination.name,
             "details": destination.details,
             "country": destination.country,
-            "average_price": destination.average_price,
             "average_temperature": destination.average_temperature,
             "average_weather": destination.average_weather,
         }
@@ -171,7 +170,6 @@ async def info(destination_id: int, db: Session = Depends(get_db)):
             print("this destination does not exist")
             raise HTTPException(status_code=404, detail="Destination not found")
         return {
-            "average_price": destination.average_price,
             "name": destination.name,
             "details": destination.details,
             "country": destination.country,

@@ -189,6 +189,20 @@ const Map = () => {
       return;
     }
 
+    
+    const isAlreadySaved = savedLocations.some(location => 
+      location[0].toLowerCase() === trimmedInput.toLowerCase()
+    );
+
+    if (isAlreadySaved) {
+      setError('Already in saved');
+      setInput('');
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
+      return;
+    }
+
     setError(null);
     setIsLoading(true);
     setSuccessMessage(null);

@@ -4,6 +4,7 @@ import type { Destination } from '../types/destination';
 import { useNavigate } from 'react-router-dom';
 import { addDestinationToWishlist } from '../services/AddDestination';
 import Navbar from './Navbar';
+import { getWishlist } from '../services/travelService';
 
 export default function SearchPlaces() {
   const [query, setQuery] = useState('');
@@ -11,26 +12,38 @@ export default function SearchPlaces() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [wishlistMessages, setWishlistMessages] = useState<{[key: number]: string}>({});
+  const [WishList, setWishlist] = useState<string[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    try {
-      const savedQuery = localStorage.getItem('searchQuery');
-      const savedDestinations = localStorage.getItem('searchResults');
-      
-      if (savedQuery) {
-        setQuery(savedQuery);
+    const fetchData = async () => {
+      try {
+        const savedQuery = localStorage.getItem('searchQuery');
+        const savedDestinations = localStorage.getItem('searchResults');
+
+        try {
+          const data = await getWishlist();
+          setWishlist(data);
+        } catch (error) {
+          console.error('Error fetching wishlist:', error);
+        }
+
+        if (savedQuery) {
+          setQuery(savedQuery);
+        }
+        
+        if (savedDestinations) {
+          const parsedDestinations = JSON.parse(savedDestinations);
+          setDestinations(parsedDestinations);
+        }
+      } catch (error) {
+        console.error('Error loading saved search data:', error);
+        localStorage.removeItem('searchQuery');
+        localStorage.removeItem('searchResults');
       }
-      
-      if (savedDestinations) {
-        const parsedDestinations = JSON.parse(savedDestinations);
-        setDestinations(parsedDestinations);
-      }
-    } catch (error) {
-      console.error('Error loading saved search data:', error);
-      localStorage.removeItem('searchQuery');
-      localStorage.removeItem('searchResults');
-    }
+    };
+
+    fetchData();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -65,9 +78,28 @@ export default function SearchPlaces() {
 
   const handleAddToWishlist = async (destinationId: number, destinationName: string) => {
     try {
+      // Check if destination is already in wishlist
+      if (WishList.includes(destinationName)) {
+        setWishlistMessages(prev => ({ 
+          ...prev, 
+          [destinationId]: 'Already in wishlist!' 
+        }));
+        
+        setTimeout(() => {
+          setWishlistMessages(prev => {
+            const newMessages = { ...prev };
+            delete newMessages[destinationId];
+            return newMessages;
+          });
+        }, 3000);
+        return;
+      }
+
       setWishlistMessages(prev => ({ ...prev, [destinationId]: 'Adding...' }));
       
       await addDestinationToWishlist(destinationName);
+      
+      setWishlist(prev => [...prev, destinationName]);
       
       setWishlistMessages(prev => ({ 
         ...prev, 
@@ -227,6 +259,8 @@ export default function SearchPlaces() {
                           wishlistMessages[destination.id]
                             ? wishlistMessages[destination.id].includes('Added')
                               ? 'bg-green-50 text-green-700 border-green-300'
+                              : wishlistMessages[destination.id].includes('Already')
+                              ? 'bg-red-50 text-red-700 border-red-300'
                               : wishlistMessages[destination.id].includes('Failed')
                               ? 'bg-red-50 text-red-700 border-red-300'
                               : 'bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed'

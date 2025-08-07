@@ -5,6 +5,7 @@ export interface Destination {
   country: string | "";
   details: string | "";
   ai_similarity: number | 0;
-  average_price: number | 0;
+  average_temperature: number | 0;
+  average_weather: string | "";
 }
 

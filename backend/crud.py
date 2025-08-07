@@ -48,7 +48,6 @@ def get_ai_destinations(db: Session, query_embedding, top_k: int = 3, min_temper
             "ai_similarity": float(similarity),
             "details": dest.details,
             "country": dest.country,
-            "average_price": dest.average_price,
             "average_temperature": dest.average_temperature,
             "average_weather": dest.average_weather,
             'id': dest.id,
