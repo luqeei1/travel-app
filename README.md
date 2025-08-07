@@ -91,12 +91,12 @@ Download from: https://www.postgresql.org/download/
 1. Ensure you have:  
    - PostgreSQL running.  
    - A database
-   - Downloaded destinations_dump.sql
+   - Downloaded destination_dump.sql
      
 2. Run :
    ```bash
    
-   psql -U your_user -d your_database_name -f destinations_dump.sql
+   psql -U your_user -d your_database_name -f destination_dump.sql
 
    ```
 
