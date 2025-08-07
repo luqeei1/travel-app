@@ -147,6 +147,8 @@ const Map = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!search.trim()) return;
+    
     setViewSaved(false); 
     setSavedMarkerPosition(null); 
     setQuery(search);
@@ -269,10 +271,11 @@ const Map = () => {
             <div className="flex-1 relative">
               <input
                 type="text"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="Search for cities, landmarks, or addresses..."
                 value={search}
                 onChange={(e) => {setSearch(e.target.value); setViewSaved(false); }}
+                disabled={!!query} // Disable if there's an active search query
               />
               {error && (
                 <p className="absolute left-0 -bottom-5 text-red-500 text-xs">
@@ -282,7 +285,12 @@ const Map = () => {
             </div>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors shadow-sm"
+              disabled={!!query} // Disable search button if there's an active query
+              className={`px-4 py-2 text-white rounded-lg transition-colors shadow-sm ${
+                query 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-blue-400 hover:bg-blue-500'
+              }`}
             >
               Search
             </button>
@@ -297,7 +305,7 @@ const Map = () => {
                 localStorage.removeItem('mapCurrentIndex');
                 localStorage.removeItem('mapViewSaved');
               }} 
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors shadow-sm"
+              className={`px-4 py-2 ${ !!query ? "bg-red-400":"bg-gray-200"} text-gray-700 rounded-lg ${!!query ? "hover:bg-red-500":"hover:bg-gray-300"} transition-colors shadow-sm`}
             >
               Reset
             </button>

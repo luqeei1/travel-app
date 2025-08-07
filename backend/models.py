@@ -9,7 +9,6 @@ class Destination(Base):
     details = Column(String)
     country = Column(String)
     region = Column(String)
-    average_price = Column(Integer)
     similarity_rating = Column(Float)
     average_temperature = Column(Integer)
     average_weather = Column(String)
