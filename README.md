@@ -91,12 +91,12 @@ Download from: https://www.postgresql.org/download/
 1. Ensure you have:  
    - PostgreSQL running.  
    - A database
-   - Downloaded travel_clean.sql
+   - Downloaded destinations_dump.sql
      
 2. Run :
    ```bash
    
-   psql -U your_user -d your_database_name -f travel_clean.sql
+   psql -U your_user -d your_database_name -f destinations_dump.sql
 
    ```
 
