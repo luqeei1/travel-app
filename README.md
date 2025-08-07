@@ -59,22 +59,14 @@ Note: Since no existing free travel APIs matched my vision for this travel app, 
 - **Nominatim OpenStreetMap** for geocoding and location search  
 ---
 
-## 📷 Demos
+### 🔍 Search Functionality  
+[![Search Functionality](https://upload.wikimedia.org/wikipedia/commons/7/75/YouTube_social_white_squircle_%282017%29.svg)](https://www.youtube.com/watch?v=ZaKiqpYi-Fg)
 
-<h3>🔍 Search Functionality</h3>
-<a href="https://www.youtube.com/watch?v=ZaKiqpYi-Fg" target="_blank">
-  <img src="https://img.youtube.com/vi/ZaKiqpYi-Fg/0.jpg" width="480">
-</a>
+### 🌍 Map and Journal  
+[![Map and Journal](https://upload.wikimedia.org/wikipedia/commons/7/75/YouTube_social_white_squircle_%282017%29.svg)](https://www.youtube.com/watch?v=RQkjUzeZE-8)
 
-<h3>🌍 Map and Journal</h3>
-<a href="https://www.youtube.com/watch?v=RQkjUzeZE-8" target="_blank">
-  <img src="https://img.youtube.com/vi/RQkjUzeZE-8/0.jpg" width="480">
-</a>
-
-<h3>⭐ Wishlist</h3>
-<a href="https://www.youtube.com/watch?v=JW839q65w9s" target="_blank">
-  <img src="https://img.youtube.com/vi/JW839q65w9s/0.jpg" width="480">
-</a>
+### ⭐ Wishlist  
+[![Wishlist](https://upload.wikimedia.org/wikipedia/commons/7/75/YouTube_social_white_squircle_%282017%29.svg)](https://www.youtube.com/watch?v=JW839q65w9s)
 
 
 
