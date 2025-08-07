@@ -62,13 +62,14 @@ Note: Since no existing free travel APIs matched my vision for this travel app, 
 ## 📷 Demos
 
 ### 🔍 Search Functionality  
-[Watch demo](https://www.youtube.com/watch?v=ZaKiqpYi-Fg)
+[![Search Functionality](https://img.youtube.com/vi/ZaKiqpYi-Fg/0.jpg)](https://www.youtube.com/watch?v=ZaKiqpYi-Fg)
 
 ### 🌍 Map and Journal  
-[Watch demo](https://www.youtube.com/watch?v=RQkjUzeZE-8)
+[![Map and Journal](https://img.youtube.com/vi/RQkjUzeZE-8/0.jpg)](https://www.youtube.com/watch?v=RQkjUzeZE-8)
 
 ### ⭐ Wishlist  
-[Watch demo](https://www.youtube.com/watch?v=JW839q65w9s)
+[![Wishlist](https://img.youtube.com/vi/JW839q65w9s/0.jpg)](https://www.youtube.com/watch?v=JW839q65w9s)
+
 
 
 
