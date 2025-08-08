@@ -9,7 +9,6 @@ class Destination(Base):
     details = Column(String)
     country = Column(String)
     region = Column(String)
-    similarity_rating = Column(Float)
     average_temperature = Column(Integer)
     average_weather = Column(String)
     embedding = Column(LargeBinary)

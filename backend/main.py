@@ -35,11 +35,6 @@ def get_settings() -> config.Settings:
 def read_root(settings: config.Settings = Depends(get_settings)):
     return {"message": "Welcome to the Travel Recommendation API!"}
 
-@app.get("/api")
-async def geocode(address: str): 
-    url = f"https://api.geoapify.com/v1/geocode/search?text={address}&apiKey={os.environ["API_KEY"]}"
-
-
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
