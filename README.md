@@ -59,16 +59,22 @@ Note: Since no existing free travel APIs matched my vision for this travel app, 
 - **Nominatim OpenStreetMap** for geocoding and location search  
 ---
 
-## 📷 Demos
+### Demos
 
 ### 🔍 Search Functionality  
-[![Search](https://img.youtube.com/vi/ZaKiqpYi-Fg/0.jpg)](https://www.youtube.com/watch?v=ZaKiqpYi-Fg)
+Watch [Search Functionality](https://www.youtube.com/watch?v=zJ_x5tmK8U0) here.
 
 ### 🌍 Map and Journal  
-[![Map](https://img.youtube.com/vi/RQkjUzeZE-8/0.jpg)](https://www.youtube.com/watch?v=RQkjUzeZE-8)
+Watch [Map and Journal](https://www.youtube.com/watch?v=TceRwwPXpiU) here.
 
 ### ⭐ Wishlist  
-[![Wishlist](https://img.youtube.com/vi/JW839q65w9s/0.jpg)](https://www.youtube.com/watch?v=JW839q65w9s)
+Watch [Wishlist](https://www.youtube.com/watch?v=qCsY6BGATSE) here.
+
+
+
+
+
+
 
 
 ## 🚀 Getting Started
@@ -91,12 +97,12 @@ Download from: https://www.postgresql.org/download/
 1. Ensure you have:  
    - PostgreSQL running.  
    - A database
-   - Downloaded travel_clean.sql
+   - Downloaded destination_dump.sql
      
 2. Run :
    ```bash
    
-   psql -U your_user -d your_database_name -f travel_clean.sql
+   psql -U your_user -d your_database_name -f destination_dump.sql
 
    ```
 
