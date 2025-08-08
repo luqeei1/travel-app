@@ -405,11 +405,9 @@ const Map = () => {
                     setQuery('');
                     setViewSaved(newViewSaved);
                     setMarkerPosition(null);
-                    setSavedMarkerPosition(null);
                     localStorage.setItem('mapViewSaved', newViewSaved.toString());
                     localStorage.removeItem('mapCurrentIndex');
                     setInput('');
-                    setSavedMarkerPosition(null);
                     restoreMapToInitialPosition();
                     
                   }}
