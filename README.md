@@ -128,6 +128,7 @@ On 2 different terminals, please run the following commands :
 cd backend
 python -m venv venv
 venv\Scripts\Activate
+pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
