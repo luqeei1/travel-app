@@ -30,7 +30,7 @@ Note: Since no existing free travel APIs matched my vision for this travel app, 
 
 ### 🎯 **Destination Details**
 - Comprehensive destination information from database  
-- Average prices, weather, and temperature data  
+- Climate and temperature data  
 - Clean, database-focused display without unnecessary clutter  
 - Direct navigation from search results and wishlist  
 
