@@ -6,7 +6,7 @@ A full-stack AI-powered travel recommendation application that helps users disco
 
 ## ✨ Features
 
-Note: Since no existing free travel APIs matched my vision for this travel app, I decided to create my own data, tailoring it to fit a mid/high mid holiday lifestyle excluding flights. Due to this fact, at times the average price may be slightly off. 
+Note: Since no existing free travel APIs matched my vision for this travel app, I decided to create my own data, tailoring it to fit a mid/high mid holiday lifestyle excluding flights. Due to this fact, at times the average price may be slightly off. To zoom into a specific point, use the mouse scroll wheel or pinch on a trackpad.
 
 ### 🔍 **AI-Powered Search**
 - Semantic search using Sentence Transformers for intelligent destination matching  
