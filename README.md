@@ -6,7 +6,7 @@ A full-stack AI-powered travel recommendation application that helps users disco
 
 ## ✨ Features
 
-Note: Since no existing free travel APIs matched my vision for this travel app, I decided to create my own data, tailoring it to fit a mid/high mid holiday lifestyle excluding flights. Due to this fact, at times the average price may be slightly off but should have a match rate of ~80%. 
+Note: Since no existing free travel APIs matched my vision for this travel app, I decided to create my own data, tailoring it to fit a mid/high mid holiday lifestyle excluding flights. Due to this fact, at times the average price may be slightly off. 
 
 ### 🔍 **AI-Powered Search**
 - Semantic search using Sentence Transformers for intelligent destination matching  
