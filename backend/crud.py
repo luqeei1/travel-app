@@ -27,11 +27,14 @@ def get_ai_destinations(db: Session, query_embedding, top_k: int = 3, min_temper
         dest_embedding = np.frombuffer(dest.embedding, dtype=np.float32)
 
         if len(dest_embedding) != len(query_embedding):
-            raise ValueError(
-                f"Embedding dimension mismatch! "
-                f"Model expects {len(query_embedding)}D, "
-                f"but found {len(dest_embedding)}D in database. "
-                "You need to re-embed all destinations with the current model."
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    f"Embedding dimension mismatch! "
+                    f"Model expects {len(query_embedding)}D, "
+                    f"but found {len(dest_embedding)}D in database. "
+                    "You need to re-embed all destinations with the current model."
+                )
             )
 
         similarity = np.dot(query_embedding, dest_embedding) / (
@@ -50,18 +53,18 @@ def get_ai_destinations(db: Session, query_embedding, top_k: int = 3, min_temper
             "country": dest.country,
             "average_temperature": dest.average_temperature,
             "average_weather": dest.average_weather,
-            'id': dest.id,
+            "id": dest.id,
         })
 
     return sorted(results, key=lambda x: x["ai_similarity"], reverse=True)[:top_k]
 
 def get_info_by_id(db: Session, destination_id: int):
-    if not db.query(models.Destination).filter(models.Destination.id == destination_id).first():
+    destination = db.query(models.Destination).filter(models.Destination.id == destination_id).first()
+    if not destination:
         print("This destination does not exist")
     else:
         print("This destination exists")
-
-    return db.query(models.Destination).filter(models.Destination.id == destination_id).first()
+    return destination
 
 def get_all_destinations(db: Session):
     destinations = db.query(models.Destination).all()
@@ -77,7 +80,7 @@ def add_destination_to_mongodb2(destination: str, journal: str):
         get_all_destinations_from_db()
         print("sent to mongodb")
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 def get_all_destinations_from_db():
     try:
@@ -90,12 +93,11 @@ def get_all_destinations_from_db():
             result.append([destination['name'], destination['journal']])
         return result
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
-def local_journal_fetch(name : str):
+def local_journal_fetch(name: str):
     if not local_journal:
         get_all_destinations_from_db()
-        
     return local_journal.get(name)
 
 def UpdateJournal(name: str, journal: str):
@@ -107,16 +109,14 @@ def UpdateJournal(name: str, journal: str):
         print(f"Updated journal for {name} in MongoDB")
         get_all_destinations_from_db()
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 def add_destination_to_wishlist(destination: str):
     try:
-        mongo_db[wishlist_collection].insert_one({
-            "name": destination,
-        })
+        mongo_db[wishlist_collection].insert_one({"name": destination})
         print(f"Destination '{destination}' added to wishlist")
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 def get_wishlist():
     try:
@@ -130,16 +130,13 @@ def get_wishlist():
         return result
     except Exception as e:
         print(f"Error in get_wishlist: {e}")
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 def delete_from_wishlist(destination: str):
-    try:
-        result = mongo_db[wishlist_collection].delete_one({"name": destination})
-        if result.deleted_count == 0:
-            raise HTTPException(status_code=404, detail="Destination not found in wishlist")
-        print(f"Destination '{destination}' removed from wishlist")
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    result = mongo_db[wishlist_collection].delete_one({"name": destination})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Destination not found in wishlist")
+    print(f"Destination '{destination}' removed from wishlist")
 
 def get_destination_by_name(db: Session, destination_name: str):
     try:
@@ -148,7 +145,7 @@ def get_destination_by_name(db: Session, destination_name: str):
         ).first()
         return destination
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 def delete_from_previous(destination_name: str):
     try:
@@ -157,5 +154,5 @@ def delete_from_previous(destination_name: str):
             raise HTTPException(status_code=404, detail="Destination not found in previous destinations")
         print(f"Previous destination '{destination_name}' deleted successfully")
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
     return {"message": "Destination removed from previous destinations successfully"}

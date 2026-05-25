@@ -28,12 +28,12 @@ function GeocodeControl({
   const map = useMap();
 
   useEffect(() => {
-    if (!query) {
-      
-      setMarkerPosition(null);
-      return;
-    }
+  if (!query) {
+    setMarkerPosition(null);
+    return;
+  }
 
+  const timeout = setTimeout(() => {
     const fetchCoords = async () => {
       try {
         const res = await fetch(
@@ -44,25 +44,25 @@ function GeocodeControl({
         if (data.length > 0) {
           const { lat, lon } = data[0];
           const position: [number, number] = [parseFloat(lat), parseFloat(lon)];
+
           map.setView(position, 5);
           setMarkerPosition(position);
-          
-          if (onLocationFound) {
-            onLocationFound(query, position);
-          }
+
+          onLocationFound?.(query, position);
         } else {
-          alert('Location not found');
           setMarkerPosition(null);
         }
       } catch (err) {
         console.error(err);
-        alert('Error fetching location');
         setMarkerPosition(null);
       }
     };
 
     fetchCoords();
-  }, [query, map, setMarkerPosition, onLocationFound]);
+  }, 500);
+
+  return () => clearTimeout(timeout);
+}, [query]);
 
   return null;
 }
@@ -85,6 +85,7 @@ const Map = () => {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -136,6 +137,14 @@ const Map = () => {
       setCurrentIndex(0);
     }
   }, [savedLocations]);
+
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, [search]);
 
   useEffect(() => {
     if (viewSaved && savedLocations.length > 0 && savedLocations[currentIndex]) {

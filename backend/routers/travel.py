@@ -12,11 +12,11 @@ from crud import (
     delete_from_wishlist,
     local_journal_fetch,
     UpdateJournal,
-    get_destination_by_name
+    get_destination_by_name,
+    delete_from_previous
 )
 from sentence_transformers import SentenceTransformer
 from pydantic import BaseModel
-from crud import delete_from_previous
 
 router = APIRouter(prefix="/travel", tags=["travel"])
 model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -44,150 +44,97 @@ def infer_temperature_range_from_query(query: str):
 
 @router.post("/ai-search")
 async def search_route(search: SearchQuery, db: Session = Depends(get_db)):
-    try:
-        query_embedding = model.encode(search.query)
-        min_temp, max_temp = infer_temperature_range_from_query(search.query)
-        
-        results = get_ai_destinations(
-            db,
-            query_embedding,
-            top_k=search.top_k,
-            min_temperature=min_temp,
-            max_temperature=max_temp
-        )
-        return results
-
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    query_embedding = model.encode(search.query)
+    min_temp, max_temp = infer_temperature_range_from_query(search.query)
+    results = get_ai_destinations(db, query_embedding, search.top_k, min_temp, max_temp)
+    return results
 
 @router.get("/visited")
 async def get_destinations(db: Session = Depends(get_db)):
-    try:
-        destinations = get_all_destinations(db)
-        if not destinations:
-            raise HTTPException(status_code=404, detail="No destination found")
-        return destinations
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    destinations = get_all_destinations(db)
+    if not destinations:
+        raise HTTPException(status_code=404, detail="No destination found")
+    return destinations
 
 @router.get("/previous")
 async def get_previous_destinations_from_mongo():
-    try:
-        print("Fetching previous destinations from MongoDB")
-        destinations = get_all_destinations_from_db()
-        if not destinations:
-            raise HTTPException(status_code=404, detail="No previous destinations found")
-        return destinations
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    destinations = get_all_destinations_from_db()
+    if not destinations:
+        raise HTTPException(status_code=404, detail="No previous destinations found")
+    return destinations
 
 @router.delete("/previous/{destination_name}")
 async def delete_previous_destination(destination_name: str):
-    try:
-        print(f"Deleting previous destination: {destination_name}")
-        delete_from_previous(destination_name)
-        return {"message": "Deleted previous destination successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    delete_from_previous(destination_name)
+    return {"message": "Deleted previous destination successfully"}
 
 @router.put("/update_journal")
 async def update_journal(updated_journal: JournalUpdate):
-    try:
-        if not updated_journal.name or not updated_journal.journal:
-            raise HTTPException(status_code=400, detail="Name and journal content are required")
-        print(f"Updating journal for {updated_journal.name}")
-        UpdateJournal(updated_journal.name, updated_journal.journal)
-        return {"message": "Journal updated successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    if not updated_journal.name or not updated_journal.journal:
+        raise HTTPException(status_code=400, detail="Name and journal content are required")
+    UpdateJournal(updated_journal.name, updated_journal.journal)
+    return {"message": "Journal updated successfully"}
 
 @router.get("/wishlist")
 async def get_wishlist_route():
-    try:
-        destinations = crud_get_wishlist()
-        if not destinations:
-            raise HTTPException(status_code=404, detail="No destination found")
-        return destinations
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    destinations = crud_get_wishlist()
+    if not destinations:
+        raise HTTPException(status_code=404, detail="No destination found")
+    return destinations
 
 @router.post("/wishlist/{destination}")
 def add_destination_to_wishlist_route(destination: str):
-    try:
-        if not destination:
-            raise HTTPException(status_code=400, detail="Destination name is required")
-        crud_add_to_wishlist(destination)
-        return {"message": "Destination added to wishlist successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    if not destination:
+        raise HTTPException(status_code=400, detail="Destination name is required")
+    crud_add_to_wishlist(destination)
+    return {"message": "Destination added to wishlist successfully"}
 
 @router.delete("/wishlist/{destination}")
 def delete_destination_from_wishlist(destination: str):
-    try:
-        if not destination:
-            raise HTTPException(status_code=400, detail="Destination name is required")
-        delete_from_wishlist(destination)
-        return {"message": "Destination removed from wishlist successfully"}
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    if not destination:
+        raise HTTPException(status_code=400, detail="Destination name is required")
+    delete_from_wishlist(destination)
+    return {"message": "Destination removed from wishlist successfully"}
 
 @router.get("/local-journal/{name}")
 async def local_journal_route(name: str):
-    try:
-        entries = local_journal_fetch(name)
-        if not entries:
-            raise HTTPException(status_code=404, detail="No journal entries found for this destination")
-        return entries
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    entries = local_journal_fetch(name)
+    if not entries:
+        raise HTTPException(status_code=404, detail="No journal entries found for this destination")
+    return entries
 
 @router.get("/search-by-name/{destination_name}")
 async def search_destination_by_name(destination_name: str, db: Session = Depends(get_db)):
-    try:
-        destination = get_destination_by_name(db, destination_name)
-        if not destination:
-            raise HTTPException(status_code=404, detail="Destination not found")
-        return {
-            "id": destination.id,
-            "name": destination.name,
-            "details": destination.details,
-            "country": destination.country,
-            "average_temperature": destination.average_temperature,
-            "average_weather": destination.average_weather,
-        }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    destination = get_destination_by_name(db, destination_name)
+    if not destination:
+        raise HTTPException(status_code=404, detail="Destination not found")
+    return {
+        "id": destination.id,
+        "name": destination.name,
+        "details": destination.details,
+        "country": destination.country,
+        "average_temperature": destination.average_temperature,
+        "average_weather": destination.average_weather,
+    }
 
 @router.get("/{destination_id}")
 async def info(destination_id: int, db: Session = Depends(get_db)):
-    try:
-        destination = get_info_by_id(db, destination_id)
-        if not destination:
-            print("this destination does not exist")
-            raise HTTPException(status_code=404, detail="Destination not found")
-        return {
-            "name": destination.name,
-            "details": destination.details,
-            "country": destination.country,
-            "average_temperature": destination.average_temperature,
-            "average_weather": destination.average_weather,
-            "id": destination.id,
-        }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    destination = get_info_by_id(db, destination_id)
+    if not destination:
+        raise HTTPException(status_code=404, detail="Destination not found")
+    return {
+        "name": destination.name,
+        "details": destination.details,
+        "country": destination.country,
+        "average_temperature": destination.average_temperature,
+        "average_weather": destination.average_weather,
+        "id": destination.id,
+    }
 
 @router.post("/add")
-def add_destination_to_mongodb(destination: dict, db: Session = Depends(get_db)):
-    try:
-        destination_name = destination.get("name")
-        destination_journal = ""
-        if not destination_name:
-            raise HTTPException(status_code=400, detail="Destination name is required")
-        add_destination_to_mongodb2(destination_name, destination_journal)
-        return {"message": "Destination added successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+def add_destination_to_mongodb(destination: dict):
+    name = destination.get("name")
+    if not name:
+        raise HTTPException(status_code=400, detail="Destination name is required")
+    add_destination_to_mongodb2(name, "")
+    return {"message": "Destination added successfully"}
