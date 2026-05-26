@@ -108,6 +108,8 @@ def UpdateJournal(name: str, journal: str):
         mongo_db[collection_name].update_one({"name": name}, {"$set": {"journal": journal}})
         print(f"Updated journal for {name} in MongoDB")
         get_all_destinations_from_db()
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -153,6 +155,9 @@ def delete_from_previous(destination_name: str):
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Destination not found in previous destinations")
         print(f"Previous destination '{destination_name}' deleted successfully")
+    
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     return {"message": "Destination removed from previous destinations successfully"}
